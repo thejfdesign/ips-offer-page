@@ -1190,11 +1190,6 @@
         <span id="cm-saving-lbl" style="font-size:20px;font-weight:800;letter-spacing:-.01em;">−€0.00</span>
       </div>
       <div class="ship-line"><span>Items total</span><span id="cm-items-total">—</span></div>
-      <div class="ship-line"><span>🚚 Est. shipping</span><span id="cm-ship-rate">Detecting…</span></div>
-      <div class="sb-pay-row">
-        <span>You pay today</span>
-        <span class="sb-pay-amt">€<span id="cm-pay">0.00</span></span>
-      </div>
     </div>
     <div class="cm-timer-wrap" id="cm-timer-wrap">
       <span class="cm-timer-label">⏰ Offer expires in</span>
@@ -1638,7 +1633,7 @@ function showClaimModal(bottle, giftObj) {
   updatePayTotal(bottlePay);
   document.getElementById('cm-bottle-name').textContent = bottle.title;
   document.getElementById('cm-gift-name').textContent   = giftObj.item.title + (giftObj.size ? ` (${giftObj.size})` : '');
-  document.getElementById('cm-pay').textContent         = bottlePay.toFixed(2);
+  const payEl2 = document.getElementById('cm-pay'); if (payEl2) payEl2.textContent = bottlePay.toFixed(2);
   document.getElementById('cm-rrp').textContent         = fullRrp.toFixed(2);
   const savePct = Math.round((totalSave / fullRrp) * 100);
   document.getElementById('cm-saving-lbl').textContent  = '−' + savePct + '%';
