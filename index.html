@@ -1540,6 +1540,15 @@ function claimOffer() {
   document.getElementById('gate-modal').classList.add('show');
 }
 
+// Shopify checkout[shipping_address][country] needs full English name, not ISO code
+const COUNTRY_NAMES = {
+  IE:'Ireland', GB:'United Kingdom', DE:'Germany', FR:'France',
+  BE:'Belgium', AT:'Austria', CH:'Switzerland', ES:'Spain',
+  IT:'Italy', PT:'Portugal', SE:'Sweden', NO:'Norway',
+  DK:'Denmark', FI:'Finland', PL:'Poland', CZ:'Czech Republic',
+  NL:'Netherlands', AU:'Australia', CA:'Canada', US:'United States',
+};
+
 function submitGate(e) {
   e.preventDefault();
   const name    = document.getElementById('gate-name').value.trim();
@@ -1594,7 +1603,7 @@ function submitGate(e) {
     'checkout[email]':             email,
     'checkout[shipping_address][first_name]': firstName,
     'checkout[shipping_address][last_name]':  lastName,
-    'checkout[shipping_address][country]':    country,
+    'checkout[shipping_address][country]':    COUNTRY_NAMES[country] || country,
     'checkout[shipping_address][company]':    String(yob),
   });
   // Fire-and-forget to Zoho CRM — keepalive:true survives page navigation
