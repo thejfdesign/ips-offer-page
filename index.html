@@ -1534,6 +1534,18 @@ function submitGate(e) {
     'checkout[shipping_address][country]':    country,
     'checkout[shipping_address][company]':    String(yob),
   });
+  // Fire-and-forget to Zoho CRM — keepalive:true survives page navigation
+  fetch('/api/zoho-lead', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name, email, yob, country,
+      bottle: selBottle ? selBottle.title : '',
+      gift:   selGift   ? (selGift.item.title + (selGift.size ? ' (' + selGift.size + ')' : '')) : '',
+    }),
+    keepalive: true,  // request survives page unload — checkout is never delayed
+  }).catch(function() {}); // silently ignore — never block checkout
+
   // Show loading state — keep modal open while browser navigates
   document.getElementById('gate-form-state').style.display = 'none';
   document.getElementById('gate-loading').classList.add('show');
