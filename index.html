@@ -1506,9 +1506,13 @@ function submitGate(e) {
     'attributes[Source]':          'Free Gift + 20% Off Page',
     'attributes[Customer Name]':   name,
     'attributes[Customer Email]':  email,
+    'attributes[Year of Birth]':   String(yob),
+    'attributes[Country]':         country,
     'checkout[email]':             email,
     'checkout[shipping_address][first_name]': firstName,
     'checkout[shipping_address][last_name]':  lastName,
+    'checkout[shipping_address][country]':    country,
+    'checkout[shipping_address][company]':    String(yob),
   });
   document.getElementById('gate-modal').classList.remove('show');
   window.location.href = `${CFG.store}/cart/${selBottle.id}:1,${selGift.variantId}:1?${p}`;
