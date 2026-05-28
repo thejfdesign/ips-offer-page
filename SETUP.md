@@ -1,0 +1,139 @@
+# Irish Premium Spirits — Free Gift Page Setup
+
+---
+
+## ① Create the Shopify Discount Code
+
+1. **Shopify Admin → Discounts → Create discount → Amount off products**
+2. Settings:
+   - Method: **Discount code**
+   - Code: `FREEGIFT` (or your choice — must match `CFG.discountCode` in the script)
+   - Value: **100% off**
+   - Applies to: **Specific collections → Clothing & Accessories**
+   - Minimum purchase requirement: **€21.99** (prevents code abuse without a bottle)
+   - Customer eligibility: All customers
+   - Usage limits: ✅ **Limit to one use per customer**
+3. Save and activate
+
+---
+
+## ② Wire the Zoho Flow Webhook
+
+### Create the Zoho Flow
+1. Go to **Zoho Flow → Create Flow**
+2. Trigger: **Webhook** → copy the webhook URL it generates
+3. Add an action: **Zoho CRM → Create Record → Leads**
+4. Map the incoming JSON fields to CRM lead fields:
+
+   | Webhook field       | CRM Lead field        |
+   |---------------------|-----------------------|
+   | `email`             | Email                 |
+   | `year_of_birth`     | DOB Year (custom field or Description) |
+   | `lead_source`       | Lead Source           |
+   | `bottle_chosen`     | Description (append)  |
+   | `gift_chosen`       | Description (append)  |
+   | `status`            | Lead Status           |
+   | `timestamp`         | Created Time          |
+
+5. **Set Lead Type to B2C** and Lead Source to "Web" or "Promotion"
+6. Activate the flow
+
+### Add the webhook URL to the page
+Open `index.html` and find the `CFG` block near the top of the script:
+
+```js
+const CFG = {
+  store:        'https://irishpremiumspirits.eu',
+  discountCode: 'FREEGIFT',
+  zohoWebhook:  'https://flow.zoho.eu/YOUR_WEBHOOK_URL', // ← paste your URL here
+  zohoEnabled:  false,  // ← change to true once URL is set
+};
+```
+
+Replace the `zohoWebhook` URL and set `zohoEnabled: true`.
+
+### When data hits Zoho
+The webhook fires **twice**:
+1. **On form submit** — captures email + year of birth immediately (before they even scratch the card). This is your abandonment safety net.
+2. **On claim (checkout redirect)** — updates the lead with the bottle and gift they chose + status "Proceeded to checkout"
+
+---
+
+## ③ How the Shopify data pre-fill works
+
+When the customer clicks "Add to Cart & Claim Free Gift", they land in Shopify cart at:
+
+```
+https://irishpremiumspirits.eu/cart/BOTTLE_VARIANT:1,GIFT_VARIANT:1
+  ?discount=FREEGIFT
+  &attributes[Lead Email]=their@email.com
+  &attributes[Year of Birth]=1985
+  &attributes[Source]=Free Gift Landing Page
+  &note=Promo lead | Email: their@email.com | YOB: 1985
+```
+
+- The discount code makes the clothing item **€0.00** at checkout
+- The `note` and `attributes` appear in the Shopify **order details** — useful for fulfilment
+- The email does **not** pre-fill the Shopify checkout email box (Shopify doesn't allow this via URL — would need Storefront API or a Shopify app for that)
+
+---
+
+## ④ Updating stock / products
+
+### Add a new bottle
+In the `BOTTLES` array in the script:
+```js
+{
+  id:    SHOPIFY_VARIANT_ID,
+  title: 'Product Name',
+  type:  'Irish Whiskey',      // shown as card badge
+  cat:   'whiskey',            // whiskey | rum | gin | vodka | liqueur
+  abv:   '43%',
+  size:  '700mL',
+  price: 49.99,
+  img:   'https://cdn.shopify.com/...',
+},
+```
+
+### Add/update a free gift item
+In the `GIFTS` array:
+```js
+{
+  key:   'unique-key',
+  title: 'Product Name',
+  price: 19.99,
+  img:   'https://cdn.shopify.com/...',
+  variants: [
+    { id: VARIANT_ID, size: 'Large' },
+    { id: VARIANT_ID, size: 'X-Large' },
+  ],
+},
+```
+
+### Find variant IDs
+Visit: `https://irishpremiumspirits.eu/products.json?limit=250`
+
+---
+
+## ⑤ Hosting options
+
+This is a **single static HTML file** — drop it anywhere.
+
+| Option | How |
+|--------|-----|
+| Shopify page | Admin → Pages → Add page → Paste HTML via `</>` editor. Use full-width template. |
+| 20i hosting | Upload `index.html` to a folder e.g. `/offer/` |
+| Netlify | Drag the file onto netlify.com/drop — live in seconds |
+| Cloudflare Pages | Connect repo or drag-and-drop |
+
+**Recommended URL**: `irishpremiumspirits.eu/offer` or `irishpremiumspirits.eu/free-gift`
+
+---
+
+## ⑥ Dev preview (local)
+
+```bash
+cd "/Users/jfdesign/ELEMENTOR TEMPLATES/Irish Premium Spirits"
+python3 -m http.server 5057
+# open http://localhost:5057
+```
