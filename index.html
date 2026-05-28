@@ -1214,7 +1214,7 @@
 </div>
 
 <!-- Claim popup modal — shown after both bottle + gift selected -->
-<div class="claim-modal" id="claim-modal">
+<div class="claim-modal" id="claim-modal" onclick="if(event.target===this){history.back();}">
   <div class="claim-box">
     <span class="claim-emoji">🎉</span>
     <div class="claim-eyebrow">Your Exclusive Offer Is Ready</div>
@@ -1494,14 +1494,34 @@ function closeGateModal() {
   document.getElementById('gate-modal').classList.remove('show');
 }
 
-// Back/forward button manages gate modal via history state
+// Unified back/forward handler for both modals and slide navigation
 window.addEventListener('popstate', function(e) {
-  if (e.state && e.state.gateOpen) {
-    // Navigated forward back to the modal state — re-open it
+  const s = e.state;
+
+  // Forward into gate modal state — re-open it
+  if (s && s.gateOpen) {
     document.getElementById('gate-modal').classList.add('show');
-  } else {
-    // Navigated back — animate modal closed
+    return;
+  }
+
+  // Gate modal is open — close it
+  if (document.getElementById('gate-modal').classList.contains('show')) {
     closeGateModal();
+    return;
+  }
+
+  // Claim modal is open — just close it, keep the selection
+  if (document.getElementById('claim-modal').classList.contains('show')) {
+    document.getElementById('claim-modal').classList.remove('show');
+    return;
+  }
+
+  // Slide navigation fallback
+  if (slideIdx > 0) {
+    goToSlide('slide-bottles', 1, true);
+    selBottle = null;
+    selGift   = null;
+    renderBottles();
   }
 });
 
@@ -1750,20 +1770,7 @@ function changeSelection() {
   renderBottles();
 }
 
-/* ── Browser back button ─────────────────────────────────── */
-window.addEventListener('popstate', () => {
-  const modal = document.getElementById('claim-modal');
-  if (modal.classList.contains('show')) {
-    changeSelection();
-    return;
-  }
-  if (slideIdx > 0) {
-    goToSlide('slide-bottles', 1, true);
-    selBottle = null;
-    selGift   = null;
-    renderBottles();
-  }
-});
+/* ── Browser back button handled in unified popstate listener above ── */
 
 /* ── Stock check (Shopify public products API) ───────────── */
 (async () => {
