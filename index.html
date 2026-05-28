@@ -852,6 +852,24 @@
     }
     .gate-blocked-btn:hover { background: var(--gold); color: var(--ink); }
 
+    /* Gate — loading / redirecting state */
+    .gate-loading { display: none; text-align: center; padding: 20px 0 8px; }
+    .gate-loading.show { display: block; }
+    .gate-spinner {
+      width: 52px; height: 52px;
+      border: 4px solid rgba(201,168,62,.22);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      animation: gate-spin .85s linear infinite;
+    }
+    @keyframes gate-spin { to { transform: rotate(360deg); } }
+    .gate-loading-title {
+      font-size: 19px; font-weight: 700;
+      color: var(--gold-lt); margin-bottom: 8px;
+    }
+    .gate-loading-sub { color: var(--dark-dim); font-size: 13px; line-height: 1.5; }
+
     /* ══════════════════════════════════════════════════════════
        CLAIM POPUP MODAL
     ══════════════════════════════════════════════════════════ */
@@ -1158,6 +1176,13 @@
       <div class="gate-blocked-title">Sorry, not available in your region</div>
       <p class="gate-blocked-msg">This promotion isn't currently available in the Netherlands. You can still browse our full award-winning range and shop on our main site.</p>
       <a class="gate-blocked-btn" href="https://irishpremiumspirits.eu">Shop Irish Premium Spirits &rarr;</a>
+    </div>
+
+    <!-- Loading / redirecting state -->
+    <div class="gate-loading" id="gate-loading">
+      <div class="gate-spinner"></div>
+      <div class="gate-loading-title">Taking you to checkout…</div>
+      <p class="gate-loading-sub">Locking in your free gift + 20% off.<br>Just a moment.</p>
     </div>
 
   </div>
@@ -1509,8 +1534,12 @@ function submitGate(e) {
     'checkout[shipping_address][country]':    country,
     'checkout[shipping_address][company]':    String(yob),
   });
-  document.getElementById('gate-modal').classList.remove('show');
-  window.location.href = `${CFG.store}/cart/${selBottle.id}:1,${selGift.variantId}:1?${p}`;
+  // Show loading state — keep modal open while browser navigates
+  document.getElementById('gate-form-state').style.display = 'none';
+  document.getElementById('gate-loading').classList.add('show');
+  setTimeout(() => {
+    window.location.href = `${CFG.store}/cart/${selBottle.id}:1,${selGift.variantId}:1?${p}`;
+  }, 120);
   return false;
 }
 
