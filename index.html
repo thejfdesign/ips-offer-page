@@ -756,6 +756,103 @@
     }
 
     /* ══════════════════════════════════════════════════════════
+       LEAD GATE MODAL
+    ══════════════════════════════════════════════════════════ */
+    .gate-modal {
+      position: fixed; inset: 0; z-index: 600;
+      background: rgba(6,4,1,.92);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .gate-modal.show { opacity: 1; pointer-events: all; }
+    .gate-box {
+      background: var(--dark-bg);
+      border: 1.5px solid var(--gold);
+      border-radius: 24px; padding: 32px 24px 28px;
+      text-align: center; max-width: 420px; width: 100%;
+      max-height: 92vh; overflow-y: auto;
+      box-shadow: 0 0 60px rgba(201,168,62,.2), 0 32px 80px rgba(0,0,0,.75);
+      transform: scale(.86) translateY(22px);
+      transition: transform .45s cubic-bezier(.34,1.56,.64,1);
+    }
+    .gate-modal.show .gate-box { transform: scale(1) translateY(0); }
+    .gate-eyebrow {
+      font-size: 10px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+    }
+    .gate-title {
+      font-size: 22px; font-weight: 800; color: var(--dark-text);
+      line-height: 1.25; margin-bottom: 6px;
+    }
+    .gate-sub {
+      font-size: 13px; color: var(--dark-dim); margin-bottom: 22px; line-height: 1.5;
+    }
+    .gate-form { text-align: left; }
+    .gate-field { margin-bottom: 14px; }
+    .gate-label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--gold); letter-spacing: .06em; text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .gate-input, .gate-select {
+      width: 100%; padding: 11px 14px;
+      background: rgba(255,255,255,.06);
+      border: 1.5px solid rgba(201,168,62,.3);
+      border-radius: 10px;
+      color: var(--dark-text); font-family: inherit; font-size: 14px;
+      outline: none; transition: border-color .2s;
+      -webkit-appearance: none; appearance: none;
+    }
+    .gate-input:focus, .gate-select:focus { border-color: var(--gold); }
+    .gate-input::placeholder { color: rgba(245,240,232,.28); }
+    .gate-select option { background: #1E1A12; color: #fff; }
+    .gate-select-wrap { position: relative; }
+    .gate-select-wrap::after {
+      content: '▾'; position: absolute; right: 13px; top: 50%;
+      transform: translateY(-50%); color: var(--gold); pointer-events: none;
+      font-size: 13px;
+    }
+    .gate-err {
+      font-size: 12px; color: #e74c3c; margin-top: 4px; display: none;
+    }
+    .gate-err.show { display: block; }
+    .gate-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-lt), var(--gold));
+      background-color: var(--gold);
+      border: none; border-radius: 50px;
+      font-family: inherit; font-size: 16px; font-weight: 800;
+      color: var(--ink); cursor: pointer; margin-top: 8px;
+      transition: opacity .2s, transform .15s;
+    }
+    .gate-btn:hover { opacity: .9; transform: translateY(-1px); }
+    .gate-btn:active { transform: scale(.98); }
+    .gate-legal {
+      font-size: 11px; color: var(--dark-faint); margin-top: 12px; text-align: center;
+    }
+
+    /* NL blocked state */
+    .gate-blocked { display: none; text-align: center; }
+    .gate-blocked.show { display: block; }
+    .gate-blocked-icon { font-size: 52px; margin-bottom: 12px; }
+    .gate-blocked-title {
+      font-size: 20px; font-weight: 800; color: var(--dark-text); margin-bottom: 10px;
+    }
+    .gate-blocked-msg {
+      font-size: 13px; color: var(--dark-dim); line-height: 1.6; margin-bottom: 24px;
+    }
+    .gate-blocked-btn {
+      display: inline-block; padding: 13px 32px;
+      border: 2px solid var(--gold); border-radius: 50px;
+      color: var(--gold); font-family: inherit; font-size: 14px; font-weight: 700;
+      text-decoration: none; transition: background .2s, color .2s;
+    }
+    .gate-blocked-btn:hover { background: var(--gold); color: var(--ink); }
+
+    /* ══════════════════════════════════════════════════════════
        CLAIM POPUP MODAL
     ══════════════════════════════════════════════════════════ */
     .claim-modal {
@@ -988,6 +1085,83 @@
 
 <!-- Confetti canvas -->
 <canvas id="confetti-canvas"></canvas>
+
+<!-- Lead gate modal — collects details, blocks NL, prefills checkout -->
+<div class="gate-modal" id="gate-modal">
+  <div class="gate-box">
+
+    <!-- Form state -->
+    <div id="gate-form-state">
+      <div class="gate-eyebrow">🔒 Almost There</div>
+      <div class="gate-title">Just a couple of details</div>
+      <p class="gate-sub">To claim your free gift + 20% off, please confirm your details below.</p>
+
+      <form class="gate-form" id="gate-form" onsubmit="return submitGate(event)">
+
+        <div class="gate-field">
+          <label class="gate-label" for="gate-name">Full Name</label>
+          <input class="gate-input" id="gate-name" type="text" placeholder="e.g. John Murphy" autocomplete="name" required />
+          <div class="gate-err" id="gate-err-name">Please enter your full name.</div>
+        </div>
+
+        <div class="gate-field">
+          <label class="gate-label" for="gate-email">Email Address</label>
+          <input class="gate-input" id="gate-email" type="email" placeholder="you@example.com" autocomplete="email" required />
+          <div class="gate-err" id="gate-err-email">Please enter a valid email address.</div>
+        </div>
+
+        <div class="gate-field">
+          <label class="gate-label" for="gate-yob">Year of Birth</label>
+          <input class="gate-input" id="gate-yob" type="number" placeholder="e.g. 1990" min="1900" max="2099" autocomplete="bday-year" required />
+          <div class="gate-err" id="gate-err-yob">You must be 18 or over to claim this offer.</div>
+        </div>
+
+        <div class="gate-field">
+          <label class="gate-label" for="gate-country">Country</label>
+          <div class="gate-select-wrap">
+            <select class="gate-select" id="gate-country" required>
+              <option value="">Select your country…</option>
+              <option value="IE">Ireland</option>
+              <option value="GB">United Kingdom</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="BE">Belgium</option>
+              <option value="AT">Austria</option>
+              <option value="CH">Switzerland</option>
+              <option value="ES">Spain</option>
+              <option value="IT">Italy</option>
+              <option value="PT">Portugal</option>
+              <option value="SE">Sweden</option>
+              <option value="NO">Norway</option>
+              <option value="DK">Denmark</option>
+              <option value="FI">Finland</option>
+              <option value="PL">Poland</option>
+              <option value="CZ">Czech Republic</option>
+              <option value="NL">Netherlands</option>
+              <option value="AU">Australia</option>
+              <option value="CA">Canada</option>
+              <option value="US">United States</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+          <div class="gate-err" id="gate-err-country">Please select your country.</div>
+        </div>
+
+        <button class="gate-btn" type="submit">Claim My Offer Now &rarr;</button>
+        <p class="gate-legal">By continuing you confirm you are 18+ and agree to receive occasional offers from Irish Premium Spirits. No spam, unsubscribe anytime.</p>
+      </form>
+    </div>
+
+    <!-- Netherlands blocked state -->
+    <div class="gate-blocked" id="gate-blocked">
+      <div class="gate-blocked-icon">🌍</div>
+      <div class="gate-blocked-title">Sorry, not available in your region</div>
+      <p class="gate-blocked-msg">This promotion isn't currently available in the Netherlands. You can still browse our full award-winning range and shop on our main site.</p>
+      <a class="gate-blocked-btn" href="https://irishpremiumspirits.eu">Shop Irish Premium Spirits &rarr;</a>
+    </div>
+
+  </div>
+</div>
 
 <!-- Claim popup modal — shown after both bottle + gift selected -->
 <div class="claim-modal" id="claim-modal">
@@ -1273,10 +1447,72 @@ function applyDetectedZone() {
 
 function claimOffer() {
   if (!selBottle || !selGift) return;
-  const p = new URLSearchParams({
-    'attributes[Source]': 'Free Gift + 20% Off Page',
+  // Reset gate to form state before showing
+  document.getElementById('gate-form-state').style.display = '';
+  document.getElementById('gate-blocked').classList.remove('show');
+  document.getElementById('gate-form').reset();
+  ['gate-err-name','gate-err-email','gate-err-yob','gate-err-country'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
   });
+  document.getElementById('gate-modal').classList.add('show');
+}
+
+function submitGate(e) {
+  e.preventDefault();
+  const name    = document.getElementById('gate-name').value.trim();
+  const email   = document.getElementById('gate-email').value.trim();
+  const yob     = parseInt(document.getElementById('gate-yob').value, 10);
+  const country = document.getElementById('gate-country').value;
+  let valid = true;
+
+  // Validate name
+  const errName = document.getElementById('gate-err-name');
+  if (!name || name.split(' ').filter(Boolean).length < 2) {
+    errName.classList.add('show'); valid = false;
+  } else { errName.classList.remove('show'); }
+
+  // Validate email
+  const errEmail = document.getElementById('gate-err-email');
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEmail.classList.add('show'); valid = false;
+  } else { errEmail.classList.remove('show'); }
+
+  // Validate age (18+)
+  const errYob = document.getElementById('gate-err-yob');
+  const age = new Date().getFullYear() - yob;
+  if (!yob || age < 18 || age > 120) {
+    errYob.classList.add('show'); valid = false;
+  } else { errYob.classList.remove('show'); }
+
+  // Validate country selected
+  const errCountry = document.getElementById('gate-err-country');
+  if (!country) {
+    errCountry.classList.add('show'); valid = false;
+  } else { errCountry.classList.remove('show'); }
+
+  if (!valid) return false;
+
+  // Block Netherlands
+  if (country === 'NL') {
+    document.getElementById('gate-form-state').style.display = 'none';
+    document.getElementById('gate-blocked').classList.add('show');
+    return false;
+  }
+
+  // All good — build cart URL with checkout prefill
+  const firstName = name.split(' ').slice(0, -1).join(' ');
+  const lastName  = name.split(' ').slice(-1)[0];
+  const p = new URLSearchParams({
+    'attributes[Source]':          'Free Gift + 20% Off Page',
+    'attributes[Customer Name]':   name,
+    'attributes[Customer Email]':  email,
+    'checkout[email]':             email,
+    'checkout[shipping_address][first_name]': firstName,
+    'checkout[shipping_address][last_name]':  lastName,
+  });
+  document.getElementById('gate-modal').classList.remove('show');
   window.location.href = `${CFG.store}/cart/${selBottle.id}:1,${selGift.variantId}:1?${p}`;
+  return false;
 }
 
 /* ── Personal offer timer (per-visitor, localStorage) ──── */
