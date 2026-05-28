@@ -776,9 +776,12 @@
       max-height: 92vh; overflow-y: auto;
       box-shadow: 0 0 60px rgba(201,168,62,.2), 0 32px 80px rgba(0,0,0,.75);
       transform: scale(.86) translateY(22px);
-      transition: transform .45s cubic-bezier(.34,1.56,.64,1);
+      transition: transform .22s ease-in; /* closing — fast, no bounce */
     }
-    .gate-modal.show .gate-box { transform: scale(1) translateY(0); }
+    .gate-modal.show .gate-box {
+      transform: scale(1) translateY(0);
+      transition: transform .45s cubic-bezier(.34,1.56,.64,1); /* opening — spring bounce */
+    }
     .gate-eyebrow {
       font-size: 10px; font-weight: 700; letter-spacing: .18em;
       text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
@@ -802,7 +805,7 @@
       background: rgba(255,255,255,.06);
       border: 1.5px solid rgba(201,168,62,.3);
       border-radius: 10px;
-      color: var(--dark-text); font-family: inherit; font-size: 14px;
+      color: var(--dark-text); font-family: inherit; font-size: 16px; /* 16px min prevents iOS Safari zoom */
       outline: none; transition: border-color .2s;
       -webkit-appearance: none; appearance: none;
     }
@@ -870,6 +873,25 @@
     }
     .gate-loading-sub { color: var(--dark-dim); font-size: 13px; line-height: 1.5; }
 
+    /* Gate modal — mobile layout fixes
+       align-items:flex-start keeps box near top so keyboard doesn't hide it */
+    @media (max-width: 480px) {
+      .gate-modal {
+        align-items: flex-start;
+        padding: 10px 12px 0;
+      }
+      .gate-box {
+        padding: 20px 16px 18px;
+        border-radius: 18px;
+        max-height: calc(100dvh - 10px);
+        max-height: calc(100vh - 10px); /* dvh fallback */
+      }
+      .gate-title { font-size: 19px; }
+      .gate-sub { font-size: 12px; margin-bottom: 16px; }
+      .gate-field { margin-bottom: 10px; }
+      .gate-btn { padding: 13px; font-size: 15px; }
+    }
+
     /* ══════════════════════════════════════════════════════════
        CLAIM POPUP MODAL
     ══════════════════════════════════════════════════════════ */
@@ -891,7 +913,10 @@
       max-height: 92vh; overflow-y: auto;
       box-shadow: 0 0 60px rgba(201,168,62,.2), 0 32px 80px rgba(0,0,0,.75);
       transform: scale(.86) translateY(22px);
-      transition: transform .45s cubic-bezier(.34,1.56,.64,1);
+      transition: transform .22s ease-in; /* closing */
+    }
+    .claim-modal.show .claim-box {
+      transition: transform .45s cubic-bezier(.34,1.56,.64,1); /* opening spring */
     }
     .claim-modal.show .claim-box { transform: scale(1) translateY(0); }
 
@@ -1105,7 +1130,7 @@
 <canvas id="confetti-canvas"></canvas>
 
 <!-- Lead gate modal — collects details, blocks NL, prefills checkout -->
-<div class="gate-modal" id="gate-modal">
+<div class="gate-modal" id="gate-modal" onclick="if(event.target===this){history.back();}">
   <div class="gate-box">
 
     <!-- Form state -->
@@ -1465,15 +1490,33 @@ function applyDetectedZone() {
   updatePayTotal();
 }
 
+function closeGateModal() {
+  document.getElementById('gate-modal').classList.remove('show');
+}
+
+// Back/forward button manages gate modal via history state
+window.addEventListener('popstate', function(e) {
+  if (e.state && e.state.gateOpen) {
+    // Navigated forward back to the modal state — re-open it
+    document.getElementById('gate-modal').classList.add('show');
+  } else {
+    // Navigated back — animate modal closed
+    closeGateModal();
+  }
+});
+
 function claimOffer() {
   if (!selBottle || !selGift) return;
   // Reset gate to form state before showing
   document.getElementById('gate-form-state').style.display = '';
   document.getElementById('gate-blocked').classList.remove('show');
+  document.getElementById('gate-loading').classList.remove('show');
   document.getElementById('gate-form').reset();
   ['gate-err-name','gate-err-email','gate-err-yob','gate-err-country'].forEach(id => {
     document.getElementById(id).classList.remove('show');
   });
+  // Push a history entry so the back button closes the modal, not the page
+  history.pushState({ gateOpen: true }, '');
   document.getElementById('gate-modal').classList.add('show');
 }
 
