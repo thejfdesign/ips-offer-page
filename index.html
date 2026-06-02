@@ -1401,7 +1401,8 @@ function pickBottle(b) {
 function renderGifts() {
   const g = document.getElementById('gift-grid');
   g.innerHTML = '';
-  GIFTS.forEach(item => {
+  const sorted = [...GIFTS].sort((a, b) => (!!a.outOfStock) - (!!b.outOfStock));
+  sorted.forEach(item => {
     const soldOut = !!item.outOfStock;
     const sel = !soldOut && selGift && selGift.key === item.key;
     const c   = document.createElement('div');
