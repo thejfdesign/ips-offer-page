@@ -553,6 +553,23 @@
     }
     .sz-pills.needs-size .sz-pill:nth-child(2) { animation-delay: .07s; }
     .sz-pills.needs-size .sz-pill:nth-child(3) { animation-delay: .14s; }
+    /* Sold-out size pill */
+    .sz-pill--out {
+      opacity: .38; cursor: not-allowed;
+      text-decoration: line-through; pointer-events: none;
+    }
+    .pill-out { font-size: 10px; }
+
+    /* Sold-out gift card */
+    .pcard.sold-out {
+      opacity: .55; cursor: not-allowed; pointer-events: none;
+      filter: grayscale(.6);
+    }
+    .pcard.sold-out .badge-free {
+      background: #888; color: #fff;
+    }
+    .sold-out-p { color: #999; font-size: 13px; font-weight: 600; }
+    .sold-out-lbl { color: #999; }
 
     /* ══════════════════════════════════════════════════════════
        SLIDE 4 — CHOOSE GIFT
@@ -1385,45 +1402,53 @@ function renderGifts() {
   const g = document.getElementById('gift-grid');
   g.innerHTML = '';
   GIFTS.forEach(item => {
-    const sel = selGift && selGift.key === item.key;
+    const soldOut = !!item.outOfStock;
+    const sel = !soldOut && selGift && selGift.key === item.key;
     const c   = document.createElement('div');
-    c.className = `pcard${sel ? ' selected' : ''}`;
+    c.className = `pcard${sel ? ' selected' : ''}${soldOut ? ' sold-out' : ''}`;
+
     const sv = item.variants[0];
-    const sizeHtml = item.variants.length === 1
-      ? `<div class="size-wrap"><span class="size-lbl">${sv.size === 'One Size' ? 'One size · fits all' : 'One size available'}</span><div class="size-one">${sv.size === 'One Size' ? '' : sv.size}</div></div>`
-      : `<div class="size-wrap">
-           <span class="size-lbl">Choose your size</span>
-           <div class="sz-pills" id="sz-${item.key}">
-             ${item.variants.map(v => `<button class="sz-pill" data-id="${v.id}" data-size="${v.size}" onclick="event.stopPropagation();onPillClick('${item.key}',${v.id},'${v.size}',this)">${v.size}</button>`).join('')}
-           </div>
-         </div>`;
+    const sizeHtml = soldOut
+      ? `<div class="size-wrap"><span class="size-lbl sold-out-lbl">Sold Out</span></div>`
+      : item.variants.length === 1
+        ? `<div class="size-wrap"><span class="size-lbl">${sv.size === 'One Size' ? 'One size · fits all' : 'One size available'}</span><div class="size-one">${sv.size === 'One Size' ? '' : sv.size}</div></div>`
+        : `<div class="size-wrap">
+             <span class="size-lbl">Choose your size</span>
+             <div class="sz-pills" id="sz-${item.key}">
+               ${item.variants.map(v => `<button class="sz-pill${v.outOfStock ? ' sz-pill--out' : ''}" data-id="${v.id}" data-size="${v.size}" ${v.outOfStock ? 'disabled title="Sold out"' : `onclick="event.stopPropagation();onPillClick('${item.key}',${v.id},'${v.size}',this)"`}>${v.size}${v.outOfStock ? ' <span class="pill-out">✕</span>' : ''}</button>`).join('')}
+             </div>
+           </div>`;
+
     c.innerHTML = `
       <div class="cimg">
-        <div class="badge-free">FREE</div>
+        <div class="badge-free">${soldOut ? 'SOLD OUT' : 'FREE'}</div>
         <img src="${item.img}" alt="${item.title}" loading="lazy" data-pin-no-hover="true"/>
-        <div class="check-badge">✓</div>
+        ${soldOut ? '' : '<div class="check-badge">✓</div>'}
       </div>
       <div class="cbody">
         <div class="ctitle">${item.title}</div>
-        <div class="cprice"><span class="free-p">FREE</span><span class="orig-p">€${item.price.toFixed(2)}</span></div>
+        <div class="cprice">${soldOut ? '<span class="sold-out-p">Sold Out</span>' : `<span class="free-p">FREE</span><span class="orig-p">€${item.price.toFixed(2)}</span>`}</div>
         ${sizeHtml}
       </div>`;
-    c.addEventListener('click', () => {
-      if (item.variants.length === 1) {
-        pickGift(item, item.variants[0].id, item.variants[0].size);
-      } else {
-        const pills = document.getElementById('sz-' + item.key);
-        const active = pills && pills.querySelector('.sz-pill.active');
-        if (active) {
-          pickGift(item, Number(active.dataset.id), active.dataset.size);
-        } else if (pills) {
-          pills.classList.remove('needs-size');
-          void pills.offsetWidth;
-          pills.classList.add('needs-size');
-          setTimeout(() => pills.classList.remove('needs-size'), 600);
+
+    if (!soldOut) {
+      c.addEventListener('click', () => {
+        if (item.variants.length === 1) {
+          pickGift(item, item.variants[0].id, item.variants[0].size);
+        } else {
+          const pills = document.getElementById('sz-' + item.key);
+          const active = pills && pills.querySelector('.sz-pill.active');
+          if (active) {
+            pickGift(item, Number(active.dataset.id), active.dataset.size);
+          } else if (pills) {
+            pills.classList.remove('needs-size');
+            void pills.offsetWidth;
+            pills.classList.add('needs-size');
+            setTimeout(() => pills.classList.remove('needs-size'), 600);
+          }
         }
-      }
-    });
+      });
+    }
     g.appendChild(c);
   });
   syncVpHeight();
@@ -1791,14 +1816,29 @@ function changeSelection() {
     // Build variantId → available map
     const avail = {};
     data.products.forEach(p => p.variants.forEach(v => { avail[v.id] = v.available; }));
-    // Mark any out-of-stock bottles
-    let changed = false;
+
+    let bottleChanged = false;
+    let giftChanged   = false;
+
+    // Mark out-of-stock bottles
     BOTTLES.forEach(b => {
       const nowOut = avail[b.id] === false;
-      if (!!b.outOfStock !== nowOut) { b.outOfStock = nowOut; changed = true; }
+      if (!!b.outOfStock !== nowOut) { b.outOfStock = nowOut; bottleChanged = true; }
     });
-    if (changed) renderBottles(); // re-render only if something changed
-  } catch(e) { /* silent fail — show all bottles */ }
+
+    // Mark out-of-stock gift variants — whole gift is out if ALL variants gone
+    GIFTS.forEach(g => {
+      g.variants.forEach(v => {
+        const nowOut = avail[v.id] === false;
+        if (!!v.outOfStock !== nowOut) { v.outOfStock = nowOut; giftChanged = true; }
+      });
+      const allOut = g.variants.every(v => v.outOfStock);
+      if (!!g.outOfStock !== allOut) { g.outOfStock = allOut; giftChanged = true; }
+    });
+
+    if (bottleChanged) renderBottles();
+    if (giftChanged)   renderGifts();
+  } catch(e) { /* silent fail — show all items */ }
 })();
 
 /* ── Init ────────────────────────────────────────────────── */
