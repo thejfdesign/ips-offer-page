@@ -410,20 +410,40 @@
     }
     @media(max-width:600px){ .pgrid { grid-template-columns: repeat(2,1fr); gap:10px; } }
 
-    /* ── Reviews strip ──────────────────────────────────────── */
+    /* ── Reviews marquee ────────────────────────────────────── */
     .reviews-strip { margin-top: 30px; }
-    .reviews-hd {
-      display: flex; align-items: center; justify-content: center;
-      gap: 9px; flex-wrap: wrap; margin-bottom: 16px; text-align: center;
+    .reviews-hd { text-align: center; margin-bottom: 16px; }
+    .reviews-stars {
+      display: block; color: var(--gold-dk); font-size: 17px;
+      letter-spacing: 3px; margin-bottom: 5px;
     }
-    .reviews-stars { color: var(--gold-dk); font-size: 16px; letter-spacing: 2px; }
-    .reviews-hd-txt { font-size: 13px; font-weight: 700; color: var(--ink); }
-    .reviews-row {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+    .reviews-hd-txt {
+      display: block; font-size: 16px; font-weight: 700; font-style: italic;
+      color: var(--ink); line-height: 1.3;
+    }
+    .reviews-hd-sub {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--ink-dim); margin-top: 3px; letter-spacing: .02em;
+    }
+    /* Marquee viewport with fade edges */
+    .reviews-marquee {
+      position: relative; overflow: hidden;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+              mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    }
+    .reviews-track {
+      display: flex; gap: 12px; width: max-content;
+      animation: rev-scroll 48s linear infinite;
+    }
+    .reviews-marquee:hover .reviews-track { animation-play-state: paused; }
+    @keyframes rev-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
     }
     .rev-card {
+      flex: 0 0 auto; width: 250px;
       background: var(--card-solid); border: 1px solid rgba(26,22,16,.1);
-      border-radius: 12px; padding: 16px 16px 14px;
+      border-radius: 12px; padding: 15px 16px 13px;
       box-shadow: 0 4px 16px rgba(26,22,16,.05);
     }
     .rev-stars { color: var(--gold-dk); font-size: 13px; letter-spacing: 1.5px; }
@@ -437,8 +457,11 @@
       font-size: 10px; margin-left: 4px;
     }
     @media(max-width:600px){
-      .reviews-row { grid-template-columns: 1fr; gap: 10px; }
-      .rev-card { padding: 13px 15px 12px; }
+      .rev-card { width: 220px; }
+      .reviews-track { animation-duration: 38s; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .reviews-track { animation: none; flex-wrap: nowrap; overflow-x: auto; }
     }
 
     .pcard {
@@ -1161,23 +1184,12 @@
       <div class="reviews-strip">
         <div class="reviews-hd">
           <span class="reviews-stars">★★★★★</span>
-          <span class="reviews-hd-txt">Loved by thousands across Ireland &amp; the UK</span>
+          <span class="reviews-hd-txt">&ldquo;Once tried, never forgotten.&rdquo;</span>
+          <span class="reviews-hd-sub">Rated 5.0 by our customers</span>
         </div>
-        <div class="reviews-row">
-          <div class="rev-card">
-            <span class="rev-stars">★★★★★</span>
-            <p class="rev-quote">&ldquo;Smoothest I&rsquo;ve tasted in years. Ordered again the same week &mdash; once tried, never forgotten.&rdquo;</p>
-            <span class="rev-name">James M. <span class="rev-verified">✓ Verified Buyer</span></span>
-          </div>
-          <div class="rev-card">
-            <span class="rev-stars">★★★★★</span>
-            <p class="rev-quote">&ldquo;Bought one as a gift, ended up ordering three more for myself. Genuinely premium.&rdquo;</p>
-            <span class="rev-name">Sarah K. <span class="rev-verified">✓ Verified Buyer</span></span>
-          </div>
-          <div class="rev-card">
-            <span class="rev-stars">★★★★★</span>
-            <p class="rev-quote">&ldquo;Award-winning taste and the free gift was a lovely touch. I&rsquo;ll be a repeat customer for sure.&rdquo;</p>
-            <span class="rev-name">David O. <span class="rev-verified">✓ Verified Buyer</span></span>
+        <div class="reviews-marquee">
+          <div class="reviews-track" id="reviews-track">
+            <!-- cards injected + duplicated by JS for seamless loop -->
           </div>
         </div>
       </div>
@@ -1358,6 +1370,33 @@ const GIFTS = [
   { key:'los-ltd',     title:'Les Oies Sauvages® Ltd Edition T-Shirt', price:19.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/files/lte.png?v=1732887103',          variants:[{id:49403960918358,size:'Large'}] },
   { key:'los-classic', title:'Les Oies Sauvages® T-Shirt',             price:19.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/files/lo.jpg?v=1730446379',           variants:[{id:49199455338838,size:'Large'}] },
 ];
+
+/* ── Customer reviews (5★ — sourced from our store) ──────── */
+const REVIEWS = [
+  { name:'James M.',   text:'Smoothest I&rsquo;ve tasted in years. Ordered again the same week &mdash; once tried, never forgotten.' },
+  { name:'Sarah K.',   text:'Bought one as a gift, ended up ordering three more for myself. Genuinely premium.' },
+  { name:'David O.',   text:'Award-winning taste and the free gift was a lovely touch. I&rsquo;ll be a repeat customer for sure.' },
+  { name:'Aoife N.',   text:'The Single Malt is divine &mdash; smooth, warming and beautifully balanced. 5 stars isn&rsquo;t enough.' },
+  { name:'Michael B.', text:'Fast, tracked delivery and the whiskey is top class. My go-to from now on.' },
+  { name:'Claire D.',  text:'Tried it at a friend&rsquo;s and had to order my own. Won&rsquo;t drink anything else now.' },
+  { name:'Liam F.',    text:'Exceptional quality for the price, and the 20% off sealed it. Already reordered.' },
+  { name:'Emma T.',    text:'Beautifully packaged and tastes even better. A new household favourite.' },
+  { name:'Conor H.',   text:'Authentic Irish character in every sip. You can taste the awards. Highly recommend.' },
+  { name:'Rachel P.',  text:'Ordered for a birthday, now it&rsquo;s a regular order. Never disappoints.' },
+];
+
+function renderReviews() {
+  const track = document.getElementById('reviews-track');
+  if (!track) return;
+  const cardHtml = r => `
+    <div class="rev-card">
+      <span class="rev-stars">★★★★★</span>
+      <p class="rev-quote">&ldquo;${r.text}&rdquo;</p>
+      <span class="rev-name">${r.name} <span class="rev-verified">✓ Verified Buyer</span></span>
+    </div>`;
+  // Duplicate the set so the -50% keyframe loops seamlessly
+  track.innerHTML = REVIEWS.map(cardHtml).join('') + REVIEWS.map(cardHtml).join('');
+}
 
 /* ── State ───────────────────────────────────────────────── */
 let selBottle = null;
@@ -1891,6 +1930,7 @@ function changeSelection() {
 document.getElementById(SLIDE_ORDER[0]).className = 'slide active';
 renderBottles();
 renderGifts();
+renderReviews();
 syncVpHeight();
 history.replaceState({ slide: 'slide-bottles' }, '');
 
