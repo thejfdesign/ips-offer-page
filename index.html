@@ -585,14 +585,15 @@
       color: var(--ink-faint); cursor: pointer; font-family: inherit;
     }
     .pinfo-close:hover { color: var(--ink); }
-    .pinfo-head { display: flex; gap: 18px; align-items: flex-start; }
+    .pinfo-head { display: flex; gap: 18px; align-items: center; }
     .pinfo-imgwrap {
-      flex: 0 0 130px; width: 130px; height: 180px;
+      flex: 0 0 150px; width: 150px; height: 330px;
       display: flex; align-items: center; justify-content: center;
     }
     .pinfo-imgwrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
     @media(max-width:420px){
-      .pinfo-imgwrap { flex-basis: 110px; width: 110px; height: 150px; }
+      .pinfo-imgwrap { flex-basis: 124px; width: 124px; height: 270px; }
+      .pinfo-head { gap: 12px; }
     }
     .pinfo-headtxt { flex: 1; min-width: 0; padding-right: 18px; }
     .pinfo-title {
