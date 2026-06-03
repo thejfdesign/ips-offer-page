@@ -551,6 +551,76 @@
       font-size: 13px; font-weight: 800; color: #1a7a3a;
     }
 
+    /* Outline "Read product info" button */
+    .bottle-info-btn {
+      width: 100%; margin-top: 10px;
+      background: transparent; border: 1.5px solid var(--gold);
+      color: var(--gold-dk); font-family: inherit; font-size: 12px; font-weight: 700;
+      padding: 8px 10px; border-radius: 9px; cursor: pointer;
+      transition: background .18s, color .18s;
+    }
+    .bottle-info-btn:hover { background: var(--gold); color: var(--ink); }
+
+    /* ── Product info modal ─────────────────────────────────── */
+    .pinfo-modal {
+      position: fixed; inset: 0; z-index: 620;
+      background: rgba(6,4,1,.9);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 24px 16px; overflow-y: auto;
+      opacity: 0; pointer-events: none; transition: opacity .3s ease;
+    }
+    .pinfo-modal.show { opacity: 1; pointer-events: all; }
+    .pinfo-box {
+      position: relative; background: var(--card-solid);
+      border-radius: 18px; max-width: 480px; width: 100%;
+      padding: 24px 22px 22px; margin: auto;
+      box-shadow: 0 32px 80px rgba(0,0,0,.55);
+      transform: translateY(16px); transition: transform .3s ease;
+    }
+    .pinfo-modal.show .pinfo-box { transform: translateY(0); }
+    .pinfo-close {
+      position: absolute; top: 12px; right: 14px;
+      background: none; border: none; font-size: 26px; line-height: 1;
+      color: var(--ink-faint); cursor: pointer; font-family: inherit;
+    }
+    .pinfo-close:hover { color: var(--ink); }
+    .pinfo-head { display: flex; gap: 16px; align-items: flex-start; }
+    .pinfo-imgwrap {
+      flex: 0 0 84px; width: 84px; height: 110px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pinfo-imgwrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .pinfo-headtxt { flex: 1; min-width: 0; padding-right: 18px; }
+    .pinfo-title {
+      font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700;
+      color: var(--ink); line-height: 1.2; margin-bottom: 4px;
+    }
+    .pinfo-meta { font-size: 11.5px; color: var(--ink-dim); margin-bottom: 8px; }
+    .pinfo-price { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+    .pinfo-was { font-size: 13px; color: var(--ink-faint); text-decoration: line-through; }
+    .pinfo-now { font-size: 19px; font-weight: 800; color: var(--ink); }
+    .pinfo-pct {
+      font-size: 11px; font-weight: 700; color: var(--green);
+      background: rgba(46,158,92,.1); border-radius: 5px; padding: 1px 6px;
+    }
+    .pinfo-stars { font-size: 13px; color: #F5B301; letter-spacing: 1px; }
+    .pinfo-stars span { color: var(--ink-dim); font-size: 11px; letter-spacing: 0; margin-left: 4px; }
+    .pinfo-awards { margin: 16px 0 4px; text-align: center; }
+    .pinfo-awards img { max-width: 100%; height: auto; }
+    .pinfo-desc {
+      margin-top: 14px; font-size: 13.5px; line-height: 1.6; color: var(--ink-2);
+      border-top: 1px solid rgba(26,22,16,.1); padding-top: 14px;
+    }
+    .pinfo-desc p { margin-bottom: 8px; }
+    .pinfo-reviews-link {
+      display: block; text-align: center; margin-top: 16px;
+      font-size: 13px; font-weight: 700; color: var(--gold-dk);
+      text-decoration: none; padding: 11px; border-radius: 10px;
+      border: 1.5px solid var(--gold); transition: background .18s, color .18s;
+    }
+    .pinfo-reviews-link:hover { background: var(--gold); color: var(--ink); }
+
     /* Total saving pill */
     .save-pill {
       margin-top: 7px;
@@ -1338,6 +1408,29 @@
   </div>
 </div>
 
+<!-- Product info modal -->
+<div class="pinfo-modal" id="pinfo-modal" onclick="if(event.target===this){history.back();}">
+  <div class="pinfo-box">
+    <button class="pinfo-close" onclick="history.back()" aria-label="Close">&times;</button>
+    <div class="pinfo-head">
+      <div class="pinfo-imgwrap"><img id="pi-img" src="" alt="" /></div>
+      <div class="pinfo-headtxt">
+        <h3 class="pinfo-title" id="pi-title">—</h3>
+        <div class="pinfo-meta" id="pi-meta">—</div>
+        <div class="pinfo-price">
+          <span class="pinfo-was" id="pi-was">—</span>
+          <span class="pinfo-now" id="pi-now">—</span>
+          <span class="pinfo-pct">-20%</span>
+        </div>
+        <div class="pinfo-stars">★★★★★ <span>4.8 · verified reviews</span></div>
+      </div>
+    </div>
+    <div class="pinfo-awards" id="pi-awards"></div>
+    <div class="pinfo-desc" id="pi-desc"></div>
+    <a class="pinfo-reviews-link" id="pi-reviews-link" href="#" target="_blank" rel="noopener">See all verified reviews on our store &rarr;</a>
+  </div>
+</div>
+
 <!-- ═══════════════════════════════════════════════════════════
      SCRIPT
 ═══════════════════════════════════════════════════════════ -->
@@ -1484,6 +1577,7 @@ function renderBottles(cat = 'all') {
           <div class="bfree-pill">🎁 + €20 FREE GIFT</div>
           <div class="bsave-line">You save €${(b.price * 0.2 + 20).toFixed(2)} total</div>
         </div>
+        <button class="bottle-info-btn" onclick="event.stopPropagation();openProductInfo(${b.id})">Read product info</button>
       </div>`;
     g.appendChild(c);
   });
@@ -1494,6 +1588,53 @@ function pickBottle(b) {
   selBottle = b;
   renderBottles();
   goToSlide('slide-gifts', 2);
+}
+
+/* ── Product info modal ──────────────────────────────────── */
+async function openProductInfo(bottleId) {
+  const b = BOTTLES.find(x => x.id === bottleId);
+  if (!b) return;
+
+  document.getElementById('pi-title').textContent = b.title;
+  document.getElementById('pi-meta').textContent  = `${b.size} · ${b.abv} · ${b.type}`;
+  const img = document.getElementById('pi-img');
+  img.src = b.img; img.alt = b.title;
+  const awardsWrap = document.getElementById('pi-awards');
+  if (b.awards) { awardsWrap.innerHTML = `<img src="${b.awards}" alt="Awards" />`; awardsWrap.style.display = 'block'; }
+  else { awardsWrap.innerHTML = ''; awardsWrap.style.display = 'none'; }
+
+  const descEl = document.getElementById('pi-desc');
+  // Price block
+  document.getElementById('pi-was').textContent = `€${b.price.toFixed(2)}`;
+  document.getElementById('pi-now').textContent = `€${(b.price * 0.8).toFixed(2)}`;
+
+  // Reviews link out (Shopify blocks iframing, so we link to the live page)
+  const revLink = document.getElementById('pi-reviews-link');
+
+  // Show modal immediately, then load description if not cached
+  history.pushState({ pInfo: true }, '');
+  document.getElementById('pinfo-modal').classList.add('show');
+
+  if (b.desc) {
+    descEl.innerHTML = b.desc;
+  } else {
+    descEl.innerHTML = '<p style="opacity:.6">Loading details…</p>';
+    try {
+      const r = await fetch(`${CFG.store}/products.json?limit=250`, { signal: AbortSignal.timeout(6000) });
+      const data = await r.json();
+      data.products.forEach(p => p.variants.forEach(v => {
+        if (v.id === b.id) { b.handle = p.handle; b.desc = p.body_html || ''; }
+      }));
+      descEl.innerHTML = b.desc || '<p style="opacity:.6">No description available.</p>';
+    } catch(e) {
+      descEl.innerHTML = '<p style="opacity:.6">Could not load details right now.</p>';
+    }
+  }
+  revLink.href = b.handle ? `${CFG.store}/products/${b.handle}#looxReviews` : CFG.store;
+}
+
+function closeProductInfo() {
+  document.getElementById('pinfo-modal').classList.remove('show');
 }
 
 /* ── Gifts ───────────────────────────────────────────────── */
@@ -1626,6 +1767,12 @@ window.addEventListener('popstate', function(e) {
   // Forward into gate modal state — re-open it
   if (s && s.gateOpen) {
     document.getElementById('gate-modal').classList.add('show');
+    return;
+  }
+
+  // Product info modal is open — close it
+  if (document.getElementById('pinfo-modal').classList.contains('show')) {
+    closeProductInfo();
     return;
   }
 
@@ -1900,17 +2047,23 @@ function changeSelection() {
       signal: AbortSignal.timeout(6000)
     });
     const data = await res.json();
-    // Build variantId → available map
+    // Build variantId → available map + variantId → product info (handle/desc)
     const avail = {};
-    data.products.forEach(p => p.variants.forEach(v => { avail[v.id] = v.available; }));
+    const infoByVariant = {};
+    data.products.forEach(p => p.variants.forEach(v => {
+      avail[v.id] = v.available;
+      infoByVariant[v.id] = { handle: p.handle, desc: p.body_html || '' };
+    }));
 
     let bottleChanged = false;
     let giftChanged   = false;
 
-    // Mark out-of-stock bottles
+    // Mark out-of-stock bottles + attach product info
     BOTTLES.forEach(b => {
       const nowOut = avail[b.id] === false;
       if (!!b.outOfStock !== nowOut) { b.outOfStock = nowOut; bottleChanged = true; }
+      const info = infoByVariant[b.id];
+      if (info) { b.handle = info.handle; b.desc = info.desc; }
     });
 
     // Mark out-of-stock gift variants — whole gift is out if ALL variants gone
