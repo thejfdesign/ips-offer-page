@@ -410,6 +410,37 @@
     }
     @media(max-width:600px){ .pgrid { grid-template-columns: repeat(2,1fr); gap:10px; } }
 
+    /* ── Reviews strip ──────────────────────────────────────── */
+    .reviews-strip { margin-top: 30px; }
+    .reviews-hd {
+      display: flex; align-items: center; justify-content: center;
+      gap: 9px; flex-wrap: wrap; margin-bottom: 16px; text-align: center;
+    }
+    .reviews-stars { color: var(--gold-dk); font-size: 16px; letter-spacing: 2px; }
+    .reviews-hd-txt { font-size: 13px; font-weight: 700; color: var(--ink); }
+    .reviews-row {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+    }
+    .rev-card {
+      background: var(--card-solid); border: 1px solid rgba(26,22,16,.1);
+      border-radius: 12px; padding: 16px 16px 14px;
+      box-shadow: 0 4px 16px rgba(26,22,16,.05);
+    }
+    .rev-stars { color: var(--gold-dk); font-size: 13px; letter-spacing: 1.5px; }
+    .rev-quote {
+      font-size: 12.5px; line-height: 1.55; color: var(--ink-dim);
+      font-style: italic; margin: 8px 0 10px;
+    }
+    .rev-name { font-size: 11.5px; font-weight: 700; color: var(--ink); }
+    .rev-verified {
+      display: inline-block; font-weight: 600; color: var(--green);
+      font-size: 10px; margin-left: 4px;
+    }
+    @media(max-width:600px){
+      .reviews-row { grid-template-columns: 1fr; gap: 10px; }
+      .rev-card { padding: 13px 15px 12px; }
+    }
+
     .pcard {
       background: var(--card-solid); border: 1.5px solid rgba(26,22,16,.1);
       border-radius: var(--r); overflow: hidden; cursor: pointer;
@@ -1125,6 +1156,31 @@
         </div>
       </div>
       <div class="pgrid" id="bottle-grid"></div>
+
+      <!-- Reviews / social proof strip -->
+      <div class="reviews-strip">
+        <div class="reviews-hd">
+          <span class="reviews-stars">★★★★★</span>
+          <span class="reviews-hd-txt">Loved by thousands across Ireland &amp; the UK</span>
+        </div>
+        <div class="reviews-row">
+          <div class="rev-card">
+            <span class="rev-stars">★★★★★</span>
+            <p class="rev-quote">&ldquo;Smoothest I&rsquo;ve tasted in years. Ordered again the same week &mdash; once tried, never forgotten.&rdquo;</p>
+            <span class="rev-name">James M. <span class="rev-verified">✓ Verified Buyer</span></span>
+          </div>
+          <div class="rev-card">
+            <span class="rev-stars">★★★★★</span>
+            <p class="rev-quote">&ldquo;Bought one as a gift, ended up ordering three more for myself. Genuinely premium.&rdquo;</p>
+            <span class="rev-name">Sarah K. <span class="rev-verified">✓ Verified Buyer</span></span>
+          </div>
+          <div class="rev-card">
+            <span class="rev-stars">★★★★★</span>
+            <p class="rev-quote">&ldquo;Award-winning taste and the free gift was a lovely touch. I&rsquo;ll be a repeat customer for sure.&rdquo;</p>
+            <span class="rev-name">David O. <span class="rev-verified">✓ Verified Buyer</span></span>
+          </div>
+        </div>
+      </div>
     </div>
   </div><!-- /slide-bottles -->
 
