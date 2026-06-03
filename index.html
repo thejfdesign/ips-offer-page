@@ -585,12 +585,15 @@
       color: var(--ink-faint); cursor: pointer; font-family: inherit;
     }
     .pinfo-close:hover { color: var(--ink); }
-    .pinfo-head { display: flex; gap: 16px; align-items: flex-start; }
+    .pinfo-head { display: flex; gap: 18px; align-items: flex-start; }
     .pinfo-imgwrap {
-      flex: 0 0 84px; width: 84px; height: 110px;
+      flex: 0 0 130px; width: 130px; height: 180px;
       display: flex; align-items: center; justify-content: center;
     }
     .pinfo-imgwrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    @media(max-width:420px){
+      .pinfo-imgwrap { flex-basis: 110px; width: 110px; height: 150px; }
+    }
     .pinfo-headtxt { flex: 1; min-width: 0; padding-right: 18px; }
     .pinfo-title {
       font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700;
@@ -613,13 +616,15 @@
       border-top: 1px solid rgba(26,22,16,.1); padding-top: 14px;
     }
     .pinfo-desc p { margin-bottom: 8px; }
-    .pinfo-reviews-link {
-      display: block; text-align: center; margin-top: 16px;
-      font-size: 13px; font-weight: 700; color: var(--gold-dk);
-      text-decoration: none; padding: 11px; border-radius: 10px;
-      border: 1.5px solid var(--gold); transition: background .18s, color .18s;
+    .pinfo-choose-btn {
+      display: block; width: 100%; text-align: center; margin-top: 18px;
+      font-family: inherit; font-size: 15px; font-weight: 800; color: var(--ink-2);
+      cursor: pointer; padding: 14px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg,var(--gold-lt) 0%,var(--gold) 60%,var(--gold-dk) 100%);
+      box-shadow: 0 6px 22px rgba(201,168,62,.45);
+      transition: transform .18s, box-shadow .18s;
     }
-    .pinfo-reviews-link:hover { background: var(--gold); color: var(--ink); }
+    .pinfo-choose-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(201,168,62,.6); }
 
     /* Total saving pill */
     .save-pill {
@@ -1427,7 +1432,7 @@
     </div>
     <div class="pinfo-awards" id="pi-awards"></div>
     <div class="pinfo-desc" id="pi-desc"></div>
-    <a class="pinfo-reviews-link" id="pi-reviews-link" href="#" target="_blank" rel="noopener">See all verified reviews on our store &rarr;</a>
+    <button class="pinfo-choose-btn" id="pi-choose-btn">Choose this bottle &rarr;</button>
   </div>
 </div>
 
@@ -1608,8 +1613,11 @@ async function openProductInfo(bottleId) {
   document.getElementById('pi-was').textContent = `€${b.price.toFixed(2)}`;
   document.getElementById('pi-now').textContent = `€${(b.price * 0.8).toFixed(2)}`;
 
-  // Reviews link out (Shopify blocks iframing, so we link to the live page)
-  const revLink = document.getElementById('pi-reviews-link');
+  // "Choose this bottle" → select it and go to the free gift step
+  document.getElementById('pi-choose-btn').onclick = function() {
+    closeProductInfo();
+    pickBottle(b);
+  };
 
   // Show modal immediately, then load description if not cached
   history.pushState({ pInfo: true }, '');
@@ -1630,7 +1638,6 @@ async function openProductInfo(bottleId) {
       descEl.innerHTML = '<p style="opacity:.6">Could not load details right now.</p>';
     }
   }
-  revLink.href = b.handle ? `${CFG.store}/products/${b.handle}#looxReviews` : CFG.store;
 }
 
 function closeProductInfo() {
