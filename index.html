@@ -1357,7 +1357,7 @@ const BOTTLES = [
   { id:53045365145942,  title:'The Wild Geese® Limited Edition', type:'Irish Whiskey',          cat:'whiskey', abv:'43%',   size:'700mL', price:64.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/The-Wild-Geese-Irish-Whiskey-ltd-edition.jpg?v=1744691067',  awards:'https://irishpremiumspirits.eu/cdn/shop/files/ltd-awards_1.png?v=1705654586' },
   { id:47512980062550,  title:'The Wild Geese® Single Malt',     type:'Single Malt Whiskey',   cat:'whiskey', abv:'43%',   size:'700mL', price:69.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/The-Wild-Geese-Irish-Whiskey-single-malt_5da53c0c-9829-4ba3-935a-c5d32b288e20.jpg?v=1744692270', awards:'https://irishpremiumspirits.eu/cdn/shop/files/Single_malt_awards_1.png?v=1705654736' },
   { id:47512980193622,  title:'UNTAMED® Cask Strength Rum',      type:'Cask Strength Rum',     cat:'rum',     abv:'60%',   size:'700mL', price:69.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/UNTAMED-Cask-Strength-Rum_54d076d9-931a-486e-b4bd-1dd502e2899f.jpg?v=1705392598',  awards:'https://irishpremiumspirits.eu/cdn/shop/files/cask_rum_awards_2.png?v=1705654787' },
-  { id:47512980226390,  title:'UNTAMED® Cask Strength Whiskey',  type:'Cask Strength Whiskey', cat:'whiskey', abv:'60%',   size:'700mL', price:69.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/UNTAMED-Cask-Strength-Whiskey_70c95f06-b448-4713-bb62-6f4eff116952.jpg?v=1744692267',awards:'https://irishpremiumspirits.eu/cdn/shop/files/cask_whiskey_awards_1.webp?v=1705654826' },
+  { id:47512980226390,  title:'UNTAMED® Cask Strength Whiskey',  type:'Cask Strength Whiskey', cat:'whiskey', abv:'60%',   size:'700mL', price:69.99, hide:true, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/UNTAMED-Cask-Strength-Whiskey_70c95f06-b448-4713-bb62-6f4eff116952.jpg?v=1744692267',awards:'https://irishpremiumspirits.eu/cdn/shop/files/cask_whiskey_awards_1.webp?v=1705654826' },
   { id:51503786885462,  title:'The Wild Geese® Golden Rum',      type:'Irish Rum',              cat:'rum',     abv:'37.5%', size:'700mL', price:33.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/The-Wild-Geese-Golden-Rum_779d9828-5ad3-4cc9-9a89-f218f8295535.jpg?v=1705392551', awards:'https://irishpremiumspirits.eu/cdn/shop/files/golden_awards.webp?v=1705654422' },
   { id:50909853843798,  title:'Hadrians Wall Blended Scotch',    type:'Blended Scotch',         cat:'whiskey', abv:'40%',   size:'700mL', price:21.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/files/hwfr.png?v=1753769239' },
   { id:47512980619606,  title:'The Shooting Party',              type:'Irish Whiskey',          cat:'whiskey', abv:'40%',   size:'700mL', price:23.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/shooting-party-irish-whiskey.jpg?v=1739336573' },
@@ -1455,8 +1455,9 @@ function filterCat(btn, cat) {
 function renderBottles(cat = 'all') {
   const g = document.getElementById('bottle-grid');
   g.innerHTML = '';
-  const pinned = BOTTLES.slice(0, 4);
-  const rest   = BOTTLES.slice(4).slice().sort((a, b) => a.price - b.price);
+  const visible = BOTTLES.filter(b => !b.hide);
+  const pinned = visible.slice(0, 4);
+  const rest   = visible.slice(4).slice().sort((a, b) => a.price - b.price);
   const ordered = [...pinned, ...rest];
   ordered.forEach(b => {
     const hide = b.outOfStock || (cat !== 'all' && b.cat !== cat);
