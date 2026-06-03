@@ -551,15 +551,15 @@
       font-size: 13px; font-weight: 800; color: #1a7a3a;
     }
 
-    /* Outline "Read product info" button */
+    /* Outline "Read product info" button — sized like the size pills */
     .bottle-info-btn {
-      width: 100%; margin-top: 10px;
-      background: transparent; border: 1.5px solid var(--gold);
-      color: var(--gold-dk); font-family: inherit; font-size: 12px; font-weight: 700;
-      padding: 8px 10px; border-radius: 9px; cursor: pointer;
-      transition: background .18s, color .18s;
+      width: 100%; margin-top: 8px;
+      background: transparent; border: 1.5px solid rgba(201,168,62,.5);
+      color: var(--gold-dk); font-family: inherit; font-size: 12px; font-weight: 600;
+      padding: 7px 6px; border-radius: 8px; cursor: pointer; line-height: 1.2;
+      transition: background .15s, color .15s, border-color .15s;
     }
-    .bottle-info-btn:hover { background: var(--gold); color: var(--ink); }
+    .bottle-info-btn:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
 
     /* ── Product info modal ─────────────────────────────────── */
     .pinfo-modal {
@@ -1572,6 +1572,7 @@ function renderBottles(cat = 'all') {
       <div class="cbody">
         <div class="ctitle">${b.title}</div>
         <div class="cmeta">${b.size} · ${b.abv}</div>
+        <button class="bottle-info-btn" onclick="event.stopPropagation();openProductInfo(${b.id})">Read product info</button>
         ${b.awards ? `<div class="card-awards"><img src="${b.awards}" alt="Awards" loading="lazy" data-pin-no-hover="true"/></div>` : ''}
         <div class="bottle-price-block">
           <div class="bprice-row">
@@ -1582,7 +1583,6 @@ function renderBottles(cat = 'all') {
           <div class="bfree-pill">🎁 + €20 FREE GIFT</div>
           <div class="bsave-line">You save €${(b.price * 0.2 + 20).toFixed(2)} total</div>
         </div>
-        <button class="bottle-info-btn" onclick="event.stopPropagation();openProductInfo(${b.id})">Read product info</button>
       </div>`;
     g.appendChild(c);
   });
