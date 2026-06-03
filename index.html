@@ -1026,21 +1026,22 @@
     }
     .ship-line + .ship-line { border-top: 1px solid rgba(255,255,255,.06); }
 
-    /* Timer in modal */
-    .cm-timer-wrap {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
+    /* Social proof / reason-why in modal */
+    .cm-social {
+      text-align: center;
       background: rgba(201,168,62,.07); border: 1px solid rgba(201,168,62,.22);
-      border-radius: 10px; padding: 8px 14px; margin-bottom: 16px;
+      border-radius: 12px; padding: 13px 16px; margin-bottom: 16px;
     }
-    .cm-timer-label { font-size: 11px; color: var(--dark-dim); }
-    .cm-timer-digits {
-      font-size: 21px; font-weight: 900; font-variant-numeric: tabular-nums;
-      letter-spacing: .05em;
-      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    .cm-social-stars {
+      font-size: 16px; letter-spacing: 3px; color: var(--gold-lt);
+      margin-bottom: 6px;
     }
-    .cm-timer-wrap.expired .cm-timer-digits {
-      background: none; -webkit-text-fill-color: var(--dark-faint); font-size: 14px;
+    .cm-social-quote {
+      font-size: 15px; font-weight: 600; font-style: italic;
+      color: var(--gold-lt); margin-bottom: 5px; line-height: 1.3;
+    }
+    .cm-social-reason {
+      font-size: 11.5px; color: var(--dark-dim); line-height: 1.5;
     }
 
     /* Claim CTA button */
@@ -1236,7 +1237,7 @@
     <span class="claim-emoji">🎉</span>
     <div class="claim-eyebrow">Your Exclusive Offer Is Ready</div>
     <h2 class="claim-headline">You're saving <span class="cm-save-amt" id="cm-save-amt">€0.00</span> today!</h2>
-    <p class="claim-sub">Your selections are locked in — complete your order before the timer runs out.</p>
+    <p class="claim-sub">Your selections are locked in — complete your order to claim your free gift + 20% off.</p>
     <div class="sel-summary">
       <div class="sel-pill">
         <img class="sel-pill-img" id="cm-bottle-img" src="" alt="" />
@@ -1258,9 +1259,10 @@
       </div>
       <div class="ship-line"><span>Items total</span><span id="cm-items-total">—</span></div>
     </div>
-    <div class="cm-timer-wrap" id="cm-timer-wrap">
-      <span class="cm-timer-label">⏰ Offer expires in</span>
-      <span class="cm-timer-digits" id="cm-timer">22:00:35</span>
+    <div class="cm-social">
+      <div class="cm-social-stars">★★★★★</div>
+      <div class="cm-social-quote">&ldquo;Once tried, never forgotten.&rdquo;</div>
+      <div class="cm-social-reason">It&rsquo;s why our customers keep coming back &mdash; award-winning Irish spirits, made to be remembered.</div>
     </div>
     <button class="btn-claim" onclick="claimOffer()">Claim My Offer Now &rarr;</button>
     <button class="btn-change-sel" onclick="changeSelection()">&#8592; Change my selection</button>
@@ -1680,17 +1682,10 @@ function tickTimer() {
   const s = secsLeft();
   const fmt = fmtTimer(s);
   const hdrT = document.getElementById('hdr-timer');
-  const cmT  = document.getElementById('cm-timer');
   if (hdrT) hdrT.textContent = fmt;
-  if (cmT)  cmT.textContent  = fmt;
   if (s === 0) {
     const ub = document.getElementById('urgency-bar');
     if (ub) ub.classList.add('hidden');
-    const tw = document.getElementById('cm-timer-wrap');
-    if (tw) {
-      tw.classList.add('expired');
-      if (cmT) cmT.textContent = 'Offer expired';
-    }
   }
 }
 
@@ -1780,12 +1775,6 @@ function showClaimModal(bottle, giftObj) {
   if (bImg) { bImg.src = bottle.img; bImg.alt = bottle.title; }
   const gImg = document.getElementById('cm-gift-img');
   if (gImg) { gImg.src = giftObj.item.img; gImg.alt = giftObj.item.title; }
-
-  const s = secsLeft();
-  const cmT = document.getElementById('cm-timer');
-  if (cmT) cmT.textContent = fmtTimer(s);
-  const tw = document.getElementById('cm-timer-wrap');
-  if (tw) tw.classList.toggle('expired', s === 0);
 
   history.pushState({ modal: true }, '');
   document.getElementById('claim-modal').classList.add('show');
