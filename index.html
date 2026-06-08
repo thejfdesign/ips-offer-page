@@ -1282,6 +1282,20 @@
         <p class="sec-sub" style="margin:0 auto;color:#111;font-size:15px;font-weight:600;">Pick <span style="background:var(--gold);color:#000;font-weight:800;padding:1px 7px;border-radius:5px;">1 item</span> below — added free to your order</p>
       </div>
       <div class="pgrid" id="gift-grid"></div>
+
+      <!-- Reviews / social proof strip (same as bottle page) -->
+      <div class="reviews-strip">
+        <div class="reviews-hd">
+          <span class="reviews-stars">★★★★★</span>
+          <span class="reviews-hd-txt">&ldquo;Once tried, never forgotten.&rdquo;</span>
+          <span class="reviews-hd-sub">Rated 4.8 stars by thousands of returning customers.</span>
+        </div>
+        <div class="reviews-marquee">
+          <div class="reviews-track">
+            <!-- cards injected + duplicated by JS for seamless loop -->
+          </div>
+        </div>
+      </div>
     </div>
   </div><!-- /slide-gifts -->
 
@@ -1486,8 +1500,8 @@ const REVIEWS = [
 ];
 
 function renderReviews() {
-  const track = document.getElementById('reviews-track');
-  if (!track) return;
+  const tracks = document.querySelectorAll('.reviews-track');
+  if (!tracks.length) return;
   const cardHtml = r => `
     <div class="rev-card">
       <span class="rev-stars">★★★★★</span>
@@ -1495,7 +1509,8 @@ function renderReviews() {
       <span class="rev-name">${r.name} <span class="rev-verified">✓ Verified Buyer</span></span>
     </div>`;
   // Duplicate the set so the -50% keyframe loops seamlessly
-  track.innerHTML = REVIEWS.map(cardHtml).join('') + REVIEWS.map(cardHtml).join('');
+  const html = REVIEWS.map(cardHtml).join('') + REVIEWS.map(cardHtml).join('');
+  tracks.forEach(t => { t.innerHTML = html; });
 }
 
 /* ── State ───────────────────────────────────────────────── */
