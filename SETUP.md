@@ -161,3 +161,24 @@ code name, change `CFG.discountCode` near the top of `offer2/index.html`.
 
 **Note:** the 50cl Honey/Classic stock is low (≈5 and ≈4 units) — the page auto-hides
 either option if it sells out.
+
+---
+
+## ⑧ Offer 3 — Free Shipping (`/offer3`)
+
+A third offer page lives at **`offers.irishpremiumspirits.eu/offer3`** (folder `offer3/index.html`).
+
+**Mechanic:** Single stage — pick any 70cl bottle → see the saving → straight to checkout
+with FREE shipping. No second step, no lead form.
+
+**⚠️ REQUIRED — create the Shopify free-shipping code `FREESHIP`:**
+1. Shopify Admin → Discounts → Create discount → **Free shipping**
+2. Method: **Discount code**, Code: `FREESHIP`
+3. Countries: select the regions you ship to (or All)
+4. (Optional) Minimum purchase amount, e.g. €20
+5. Limit: **one use per customer**
+
+The page applies `?discount=FREESHIP` automatically at checkout. If you use a different
+code name, change `CFG.discountCode` near the top of `offer3/index.html`.
+Same 4 bottles as offer 2 (Gin, Classic, Vodka, Golden Rum); the displayed saving is
+capped at €22.99 so the headline stays believable.

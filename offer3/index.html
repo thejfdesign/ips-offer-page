@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Shipping Offer | Irish Premium Spirits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold-lt:    #F8E47D;
+      --gold:       #C9A83E;
+      --gold-dk:    #8D672D;
+      --gold-glow:  rgba(201,168,62,.28);
+      --gold-bd:    rgba(201,168,62,.35);
+      --gold-faint: rgba(201,168,62,.12);
+
+      --ink:        #1A1610;
+      --ink-2:      #2A2419;
+      --ink-dim:    rgba(26,22,16,.6);
+      --ink-faint:  rgba(26,22,16,.35);
+
+      --white:      #FFFFFF;
+      --card:       rgba(255,255,255,0.95);
+      --card-solid: #FFFFFF;
+
+      --dark-bg:    #1E1A12;
+      --dark-bd:    rgba(201,168,62,.25);
+      --dark-text:  rgba(245,240,232,.92);
+      --dark-dim:   rgba(245,240,232,.6);
+      --dark-faint: rgba(245,240,232,.3);
+
+      --green:      #2E9E5C;
+      --r:          14px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; }
+
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      font-size: 15px; line-height: 1.6;
+      /* Feathers always visible, fixed so it never scrolls away */
+      background: #f0ece4 url('feathers-bg.jpg') center center / cover fixed;
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ── Confetti (fixed overlay) ───────────────────────────── */
+    #confetti-canvas {
+      position: fixed; inset: 0; z-index: 500;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════════════════════ */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--dark-bg);
+      border-bottom: 1px solid var(--dark-bd);
+      height: 60px; padding: 0 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    }
+    #hdr-back {
+      display: none; align-items: center; justify-content: center;
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: none; border: 1.5px solid var(--dark-bd);
+      border-radius: 8px; color: var(--dark-text);
+      cursor: pointer; transition: border-color .2s, color .2s;
+    }
+    #hdr-back:hover { border-color: var(--gold); color: var(--gold); }
+    .hdr-logo { display: flex; align-items: center; flex: 1; }
+    .hdr-logo img { height: 34px; width: auto; }
+    .hdr-steps { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .sdot {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 1.5px solid var(--dark-bd);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 600; color: var(--dark-faint); transition: all .3s;
+    }
+    .sdot.active { border-color: var(--gold); color: var(--gold); }
+    .sdot.done   { background: linear-gradient(135deg,var(--gold-lt),var(--gold)); border-color: var(--gold); color: var(--ink-2); }
+    .sline       { width: 12px; height: 1px; background: var(--dark-bd); }
+    @media(max-width:440px){ .hdr-steps { display: none; } }
+
+    /* ══════════════════════════════════════════════════════════
+       SLIDE ENGINE
+       All slides stack in a relative container.
+       Feathers body background is always visible beneath them
+       because every slide has a transparent background.
+    ══════════════════════════════════════════════════════════ */
+    .slides-vp {
+      position: relative;
+      overflow: hidden;
+      /* Height is set by JS to match the active slide */
+      min-height: calc(100vh - 60px);
+    }
+
+    .slide {
+      position: absolute; top: 0; left: 0; width: 100%;
+      /* transparent so feathers show through */
+      background: transparent;
+      transform: translateX(100%);
+      transition: transform 0.44s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+      padding-bottom: 80px; /* space above sticky bar */
+    }
+    .slide.active { transform: translateX(0); }
+    .slide.past   { transform: translateX(-100%); }
+
+    /* First slide starts active — set via JS on load */
+
+    /* ── Shared layout helpers ────────────────────────────── */
+    .inner   { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .narrow  { max-width: 560px;  margin: 0 auto; padding: 0 24px; }
+    .step-wrap { padding: 52px 0 0; }
+
+    .sec-badge {
+      display: inline-block;
+      font-size: 12px; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 10px;
+      border: 1.5px solid var(--gold-bd);
+      border-radius: 100px; padding: 5px 16px;
+      background: rgba(201,168,62,.08);
+    }
+    .sec-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(22px,5.5vw,52px); font-weight: 800;
+      line-height: 1.12; margin-bottom: 16px; color: var(--ink);
+    }
+    .title-free {
+      position: relative; display: inline-block; white-space: nowrap;
+      padding-bottom: .12em;
+      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 55%, var(--gold-dk) 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    /* Hand-drawn brush underline that draws itself in, holds, then wipes */
+    .free-underline {
+      position: absolute; left: -3%; bottom: -.12em;
+      width: 106%; height: .42em; overflow: visible; pointer-events: none;
+    }
+    .free-underline path {
+      fill: none; stroke: var(--gold); stroke-width: 7; stroke-linecap: round;
+      stroke-dasharray: 230; stroke-dashoffset: 230;
+      filter: drop-shadow(0 1px 1px rgba(141,103,45,.25));
+      animation: draw-underline 3.4s ease-in-out infinite;
+    }
+    @keyframes draw-underline {
+      0%   { stroke-dashoffset: 230; }
+      38%  { stroke-dashoffset: 0; }
+      72%  { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -230; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .free-underline path { animation: none; stroke-dashoffset: 0; }
+    }
+    .hero-pitch {
+      max-width: 480px; margin: 0 auto 20px; font-size: clamp(14px,3.6vw,17px);
+      line-height: 1.55; color: var(--ink-dim); font-weight: 500;
+    }
+    .hero-pitch strong { color: var(--ink); font-weight: 800; }
+    .sec-sub { font-size: 14px; color: var(--ink-dim); max-width: 440px; }
+    .sec-hdr { text-align: center; margin-bottom: 36px; }
+
+    /* Hero perk chips */
+    .hero-perks {
+      display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .hero-perk {
+      display: flex; align-items: center; gap: 9px;
+      background: #fff; border: 1.5px solid rgba(26,22,16,.1);
+      border-radius: 14px; padding: 10px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      flex: 1 1 140px; max-width: 200px;
+    }
+    .hp-icon { font-size: 24px; flex-shrink: 0; line-height: 1; }
+    .hp-text { display: flex; flex-direction: column; text-align: left; }
+    .hp-text strong { font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+    .hp-text span { font-size: 11px; color: var(--ink-faint); font-weight: 400; margin-top: 1px; }
+
+    /* ── Frosted glass content card ──────────────────────── */
+    .glass-card {
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 20px;
+      box-shadow: 0 8px 48px rgba(26,22,16,.10);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       SLIDE 1 — PRIZE WHEEL
+    ══════════════════════════════════════════════════════════ */
+    #slide-scratch { text-align: center; padding: 56px 24px 0; }
+    .scratch-hero-logo { height: 66px; width: auto; margin-bottom: 26px; }
+    .offer-ribbon {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--dark-bg); border: 1px solid var(--dark-bd);
+      border-radius: 100px; padding: 6px 20px;
+      font-size: 11px; font-weight: 600; letter-spacing: .14em;
+      color: var(--gold); text-transform: uppercase; margin-bottom: 22px;
+    }
+    .scratch-headline {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(23px,5.5vw,42px); font-weight: 700;
+      line-height: 1.1; margin-bottom: 10px; color: var(--ink);
+    }
+    .scratch-headline span {
+      white-space: nowrap;
+      background: linear-gradient(135deg,var(--gold-lt) 10%,var(--gold) 55%,var(--gold-dk) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .scratch-sub { font-size: 15px; color: var(--ink-dim); margin: 0 auto 30px; max-width: 400px; line-height: 1.65; }
+
+    /* ── Prize Wheel ─────────────────────────────────────── */
+    .wheel-outer { display: inline-flex; flex-direction: column; align-items: center; margin-bottom: 14px; }
+    .wheel-ptr {
+      line-height: 1; margin-bottom: -5px; z-index: 2;
+      filter: drop-shadow(0 4px 14px rgba(201,168,62,.9));
+      animation: ptr-bob 1.8s ease-in-out infinite;
+    }
+    .wheel-ptr.still { animation: none; }
+    @keyframes ptr-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .wheel-wrap { position: relative; display: inline-block; }
+    #wheel-canvas { display: block; border-radius: 50%; }
+
+    /* SPIN button — centred hub on the wheel canvas */
+    .btn-spin {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 88px; height: 88px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 50%, var(--gold-dk) 100%);
+      color: var(--ink-2); font-weight: 900; font-size: 18px;
+      letter-spacing: .09em; font-family: inherit; line-height: 1;
+      border: 5px solid rgba(255,255,255,.96);
+      box-shadow: 0 0 0 3px rgba(201,168,62,.55), 0 6px 28px rgba(201,168,62,.75), 0 12px 48px rgba(201,168,62,.35);
+      cursor: pointer;
+      animation: spin-idle 2.2s ease-in-out infinite;
+    }
+    @keyframes spin-idle {
+      0%,100% { transform: translate(-50%,-50%) scale(1);    box-shadow: 0 0 0 3px rgba(201,168,62,.55), 0 6px 28px rgba(201,168,62,.75), 0 12px 48px rgba(201,168,62,.35); }
+      50%      { transform: translate(-50%,-50%) scale(1.08); box-shadow: 0 0 0 5px rgba(201,168,62,.7),  0 8px 40px rgba(201,168,62,.95), 0 16px 60px rgba(201,168,62,.45); }
+    }
+    /* Ripple rings radiating outward */
+    .btn-spin::before,
+    .btn-spin::after {
+      content: ''; position: absolute; inset: -3px;
+      border-radius: 50%; border: 2.5px solid rgba(201,168,62,.65);
+      animation: spin-ring 2.2s ease-out infinite;
+    }
+    .btn-spin::after { animation-delay: 1.1s; }
+    @keyframes spin-ring {
+      0%   { transform: scale(1);    opacity: .8; }
+      100% { transform: scale(1.95); opacity: 0;  }
+    }
+    .btn-spin:hover:not(:disabled) {
+      animation: none;
+      transform: translate(-50%, -50%) scale(1.13);
+      box-shadow: 0 0 0 5px rgba(201,168,62,.7), 0 10px 44px rgba(201,168,62,1), 0 18px 64px rgba(201,168,62,.5);
+    }
+    .btn-spin:disabled {
+      opacity: .72; cursor: not-allowed;
+      animation: none;
+    }
+    .btn-spin:disabled::before,
+    .btn-spin:disabled::after { display: none; }
+    .btn-spin.spinning {
+      animation: hub-pulse .7s ease-in-out infinite alternate;
+      transform: translate(-50%,-50%);
+    }
+    .btn-spin.spinning::before,
+    .btn-spin.spinning::after { display: none; }
+    @keyframes hub-pulse {
+      from { box-shadow: 0 0 0 3px rgba(201,168,62,.5), 0 6px 28px rgba(201,168,62,.7); }
+      to   { box-shadow: 0 0 0 6px rgba(201,168,62,.7), 0 8px 40px rgba(201,168,62,.95); }
+    }
+
+    .wheel-hint {
+      font-size: 13px; color: var(--ink-dim); margin-top: 10px; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      animation: bob 2s ease-in-out infinite;
+    }
+    .wheel-hint.hidden { display: none; }
+    @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+
+    /* Won result */
+    .wheel-done { display: none; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 28px; animation: pop-in .5s cubic-bezier(.34,1.56,.64,1) both; }
+    .wheel-done.show { display: flex; }
+    @keyframes pop-in { from{opacity:0;transform:scale(.7)} to{opacity:1;transform:scale(1)} }
+    .wheel-won-badge {
+      background: var(--dark-bg); border: 1px solid var(--gold-bd);
+      border-radius: 100px; padding: 8px 24px;
+      font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: .04em;
+    }
+    .wheel-won-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(28px,5.5vw,42px); font-weight: 700;
+      line-height: 1.15; color: var(--ink); text-align: center;
+    }
+    .wheel-won-title span {
+      display: block; font-size: 15px; color: var(--gold-dk);
+      font-family: 'Poppins', sans-serif; font-weight: 600; margin-top: 5px;
+    }
+    .btn-gold-lg {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
+      color: var(--ink-2); font-weight: 700; font-size: 16px;
+      padding: 15px 38px; border-radius: 12px; border: none;
+      cursor: pointer; font-family: inherit; letter-spacing: .02em; transition: all .25s;
+    }
+    .btn-gold-lg:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--gold-glow); }
+
+    /* Trust pills */
+    .trust-pills { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+    .tpill {
+      background: rgba(255,255,255,.78); backdrop-filter: blur(6px);
+      border: 1px solid rgba(201,168,62,.3);
+      border-radius: 8px; padding: 5px 13px;
+      font-size: 11px; font-weight: 500; color: var(--ink-dim);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       SLIDE 2 — LEAD FORM
+    ══════════════════════════════════════════════════════════ */
+    #slide-form .step-wrap {
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; text-align: center;
+      padding: 52px 24px 0;
+    }
+
+    /* Won-preview banner that stays visible on the form slide */
+    .won-preview {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--dark-bg); border: 1px solid var(--dark-bd);
+      border-radius: 12px; padding: 14px 20px;
+      margin-bottom: 28px; max-width: 440px; width: 100%;
+      text-align: left;
+    }
+    .won-preview-icon { font-size: 32px; flex-shrink: 0; }
+    .won-preview-text strong {
+      display: block; color: var(--gold);
+      font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600;
+    }
+    .won-preview-text span { font-size: 12px; color: var(--dark-dim); }
+
+    .lead-card {
+      background: var(--card); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.7); border-radius: 20px;
+      padding: 34px 30px; text-align: left; max-width: 480px; width: 100%;
+      box-shadow: 0 8px 48px rgba(26,22,16,.10);
+    }
+    .lead-card-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px; font-weight: 600; margin-bottom: 4px;
+      color: var(--ink); text-align: center;
+    }
+    .lead-card-sub {
+      font-size: 13px; color: var(--gold-dk); font-weight: 600;
+      text-align: center; margin-bottom: 24px;
+    }
+
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block; font-size: 11px; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--ink-faint); margin-bottom: 6px;
+    }
+    .field input {
+      width: 100%; padding: 13px 16px;
+      background: var(--white); border: 1.5px solid rgba(26,22,16,.18);
+      border-radius: 10px; color: var(--ink); font-size: 16px; font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
+      -moz-appearance: textfield;
+    }
+    .field input::-webkit-inner-spin-button,
+    .field input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .field input::placeholder { color: var(--ink-faint); }
+    .field input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); }
+    .field input.invalid { border-color: #c0392b; }
+    .field-err { font-size: 12px; color: #c0392b; margin-top: 5px; display: none; }
+    .field-err.show { display: block; }
+
+    #underage-msg { display: none; text-align: center; padding: 8px 0; }
+    #underage-msg.show { display: block; }
+    #underage-msg h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px; font-weight: 600; margin-bottom: 12px; color: var(--ink);
+    }
+    #underage-msg p { color: var(--ink-dim); font-size: 14px; margin-bottom: 16px; }
+    #underage-msg a { color: var(--gold); font-weight: 600; text-decoration: none; }
+    .retry-btn {
+      background: none; border: 1.5px solid var(--gold-bd); color: var(--gold);
+      font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: 8px;
+      cursor: pointer; font-family: inherit; transition: all .2s; margin-top: 8px;
+    }
+    .retry-btn:hover { background: var(--gold-faint); }
+
+    .btn-gold {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg,var(--gold-lt) 0%,var(--gold) 55%,var(--gold-dk) 100%);
+      color: var(--ink-2); font-weight: 700; font-size: 16px;
+      border: none; border-radius: 11px; cursor: pointer;
+      font-family: inherit; letter-spacing: .02em; margin-top: 6px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all .25s;
+    }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 28px var(--gold-glow); }
+    .btn-gold:disabled { opacity: .6; pointer-events: none; }
+    .form-legal {
+      font-size: 11px; color: var(--ink-faint);
+      text-align: center; margin-top: 14px; line-height: 1.6;
+    }
+    .form-legal a { color: var(--gold); text-decoration: none; }
+
+    /* ══════════════════════════════════════════════════════════
+       SLIDE 3 — CHOOSE BOTTLE
+    ══════════════════════════════════════════════════════════ */
+    .cat-tabs {
+      display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;
+    }
+    .ctab {
+      padding: 7px 16px; border-radius: 100px;
+      border: 1.5px solid rgba(26,22,16,.22);
+      background: rgba(255,255,255,.65); backdrop-filter: blur(4px);
+      color: var(--ink-dim); font-size: 13px; font-weight: 500;
+      cursor: pointer; font-family: inherit; transition: all .2s;
+    }
+    .ctab:hover { border-color: var(--gold); color: var(--gold-dk); }
+    .ctab.active {
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
+      border-color: var(--gold); color: var(--ink-2); font-weight: 700;
+    }
+
+    .pgrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+      gap: 16px;
+    }
+    @media(max-width:600px){ .pgrid { grid-template-columns: repeat(2,1fr); gap:10px; } }
+
+    /* Bottle grid — 4 cards, centred (no empty auto-fill columns) */
+    #bottle-grid {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 16px; max-width: 920px; margin: 0 auto;
+    }
+    #bottle-grid .pcard { flex: 0 0 210px; max-width: 100%; }
+    @media(max-width:600px){
+      #bottle-grid { gap: 10px; }
+      #bottle-grid .pcard { flex: 1 1 44%; max-width: 48%; }
+    }
+
+    /* Free 50cl gift grid — only 2 cards, centred & larger */
+    #gift-grid {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 20px; max-width: 760px; margin: 0 auto;
+    }
+    #gift-grid .pcard { flex: 0 0 340px; max-width: 100%; }
+    #gift-grid .cimg { padding: 22px 18px; }
+    @media(max-width:600px){
+      #gift-grid { gap: 14px; }
+      #gift-grid .pcard { flex-basis: 100%; max-width: 360px; }
+    }
+
+    /* ── Reviews marquee ────────────────────────────────────── */
+    .reviews-strip { margin-top: 30px; }
+    .reviews-hd { text-align: center; margin-bottom: 22px; }
+    .reviews-stars {
+      display: block; color: #F5B301; font-size: 32px;
+      letter-spacing: 5px; margin-bottom: 8px;
+    }
+    .reviews-hd-txt {
+      display: block; font-size: clamp(26px, 6vw, 32px); font-weight: 700; font-style: italic;
+      color: var(--ink); line-height: 1.2;
+    }
+    .reviews-hd-sub {
+      display: block; font-size: clamp(15px, 3.4vw, 19px); font-weight: 600;
+      color: var(--ink-dim); margin-top: 8px; letter-spacing: .01em;
+      max-width: 560px; margin-left: auto; margin-right: auto; line-height: 1.4;
+    }
+    /* Marquee viewport with fade edges */
+    .reviews-marquee {
+      position: relative; overflow: hidden;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+              mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    }
+    .reviews-track {
+      display: flex; gap: 12px; width: max-content;
+      animation: rev-scroll 48s linear infinite;
+    }
+    .reviews-marquee:hover .reviews-track { animation-play-state: paused; }
+    @keyframes rev-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .rev-card {
+      flex: 0 0 auto; width: 250px;
+      background: var(--card-solid); border: 1px solid rgba(26,22,16,.1);
+      border-radius: 12px; padding: 15px 16px 13px;
+      box-shadow: 0 4px 16px rgba(26,22,16,.05);
+    }
+    .rev-stars { color: #F5B301; font-size: 13px; letter-spacing: 1.5px; }
+    .rev-quote {
+      font-size: 12.5px; line-height: 1.55; color: var(--ink-dim);
+      font-style: italic; margin: 8px 0 10px;
+    }
+    .rev-name { font-size: 11.5px; font-weight: 700; color: var(--ink); }
+    .rev-verified {
+      display: inline-block; font-weight: 600; color: var(--green);
+      font-size: 10px; margin-left: 4px;
+    }
+    @media(max-width:600px){
+      .rev-card { width: 220px; }
+      .reviews-track { animation-duration: 38s; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .reviews-track { animation: none; flex-wrap: nowrap; overflow-x: auto; }
+    }
+
+    .pcard {
+      background: var(--card-solid); border: 1.5px solid rgba(26,22,16,.1);
+      border-radius: var(--r); overflow: hidden; cursor: pointer;
+      display: flex; flex-direction: column; position: relative;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      box-shadow: 0 2px 14px rgba(26,22,16,.07);
+      z-index: 0;
+    }
+    .pcard:hover { border-color: var(--gold-bd); transform: translateY(-3px); box-shadow: 0 10px 32px rgba(26,22,16,.13); z-index: 2; }
+    .pcard.selected { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow), 0 10px 32px rgba(26,22,16,.13); z-index: 1; }
+    .pcard.hidden { display: none; }
+
+    .cimg {
+      background: #ffffff;
+      aspect-ratio: 3/4;
+      display: flex; align-items: center; justify-content: center;
+      padding: 18px 14px; position: relative; overflow: hidden;
+    }
+    .cimg img { max-height: 100%; max-width: 100%; object-fit: contain; }
+
+    .badge-type {
+      position: absolute; top: 8px; left: 8px; background: var(--ink-2);
+      border-radius: 5px; padding: 3px 7px; font-size: 9px; font-weight: 600;
+      letter-spacing: .08em; color: var(--gold); text-transform: uppercase;
+    }
+    .badge-free {
+      position: absolute; top: 8px; left: 8px; z-index: 2;
+      background: linear-gradient(135deg,#27a85a,#1e8044);
+      border-radius: 5px; padding: 4px 9px;
+      font-size: 10px; font-weight: 800; letter-spacing: .1em; color: #fff; text-transform: uppercase;
+      overflow: hidden; box-shadow: 0 2px 10px rgba(39,168,90,.45);
+    }
+    .badge-free::after {
+      content:''; position:absolute; inset:0;
+      background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.75) 50%, transparent 65%);
+      transform: translateX(-130%);
+      animation: free-shimmer 2.6s ease-in-out infinite;
+    }
+    @keyframes free-shimmer { 0%{transform:translateX(-130%);} 55%,100%{transform:translateX(130%);} }
+    /* 20% OFF sticker — top-right of image */
+    .badge-off {
+      position: absolute; top: 8px; right: 8px;
+      background: linear-gradient(135deg,#27a85a,#1a7a3a);
+      border-radius: 5px; padding: 3px 7px;
+      font-size: 9px; font-weight: 800; letter-spacing: .08em; color: #fff; text-transform: uppercase;
+      box-shadow: 0 2px 6px rgba(27,120,58,.35);
+    }
+    .check-badge {
+      position: absolute; top: 8px; right: 8px;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
+      color: var(--ink-2); font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .2s; box-shadow: 0 2px 8px rgba(26,22,16,.25);
+    }
+    .pcard.selected .check-badge { opacity: 1; }
+    /* Hide the 20% badge when card is selected (check badge replaces it) */
+    .pcard.selected .badge-off { opacity: 0; }
+
+    .cbody { padding: 12px 12px 14px; flex: 1; display: flex; flex-direction: column; }
+    .ctitle {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px; font-weight: 600; line-height: 1.3; margin-bottom: 3px; color: var(--ink);
+    }
+    .cmeta  { font-size: 11px; color: var(--ink-faint); margin-bottom: 6px; }
+
+    /* Price row: crossed RRP + sale price */
+    .cprice-row { display: flex; align-items: baseline; gap: 6px; margin-top: auto; }
+    .price-was  { font-size: 12px; color: var(--ink-faint); text-decoration: line-through; font-weight: 400; }
+    .price-now  { font-size: 17px; font-weight: 800; color: var(--ink); }
+
+    /* Bottle card price block */
+    .bottle-price-block {
+      margin-top: 10px; padding-top: 9px;
+      border-top: 1px solid rgba(26,22,16,.08);
+    }
+    .bprice-row { display: flex; align-items: baseline; gap: 6px; }
+    .bprice-was { font-size: 12px; color: var(--ink-faint); text-decoration: line-through; font-weight: 400; }
+    .bprice-now { font-size: 18px; font-weight: 800; color: var(--ink); }
+    .bprice-pct { font-size: 11px; font-weight: 700; color: var(--green); background: rgba(46,158,92,.1); border-radius: 5px; padding: 1px 5px; }
+    .bfree-pill {
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 7px;
+      background: linear-gradient(135deg, rgba(201,168,62,.22), rgba(201,168,62,.10));
+      border: 1px solid var(--gold);
+      border-radius: 20px; padding: 6px 13px;
+      font-size: 12px; font-weight: 800; color: var(--gold-dk);
+      letter-spacing: .03em;
+    }
+    .bfree-pill::after {
+      content:''; position:absolute; inset:0;
+      background: linear-gradient(110deg, transparent 38%, rgba(255,255,255,.65) 50%, transparent 62%);
+      transform: translateX(-130%);
+      animation: free-shimmer 2.8s ease-in-out infinite;
+    }
+    .bsave-line {
+      margin-top: 6px;
+      font-size: 13px; font-weight: 800; color: #1a7a3a;
+    }
+
+    /* Outline "Read product info" button — sized like the size pills */
+    .bottle-info-btn {
+      width: 100%; margin-top: 8px;
+      background: transparent; border: 1.5px solid rgba(201,168,62,.5);
+      color: var(--gold-dk); font-family: inherit; font-size: 12px; font-weight: 600;
+      padding: 7px 6px; border-radius: 8px; cursor: pointer; line-height: 1.2;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .bottle-info-btn:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+    /* ── Product info modal ─────────────────────────────────── */
+    .pinfo-modal {
+      position: fixed; inset: 0; z-index: 620;
+      background: rgba(6,4,1,.9);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 24px 16px; overflow-y: auto;
+      opacity: 0; pointer-events: none; transition: opacity .3s ease;
+    }
+    .pinfo-modal.show { opacity: 1; pointer-events: all; }
+    .pinfo-box {
+      position: relative; background: var(--card-solid);
+      border-radius: 18px; max-width: 480px; width: 100%;
+      padding: 24px 22px 22px; margin: auto;
+      box-shadow: 0 32px 80px rgba(0,0,0,.55);
+      transform: translateY(16px); transition: transform .3s ease;
+    }
+    .pinfo-modal.show .pinfo-box { transform: translateY(0); }
+    .pinfo-close {
+      position: absolute; top: 12px; right: 14px;
+      background: none; border: none; font-size: 26px; line-height: 1;
+      color: var(--ink-faint); cursor: pointer; font-family: inherit;
+    }
+    .pinfo-close:hover { color: var(--ink); }
+    .pinfo-head { display: flex; gap: 18px; align-items: center; }
+    .pinfo-imgwrap {
+      flex: 0 0 150px; width: 150px; height: 330px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pinfo-imgwrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    @media(max-width:420px){
+      .pinfo-imgwrap { flex-basis: 124px; width: 124px; height: 270px; }
+      .pinfo-head { gap: 12px; }
+    }
+    .pinfo-headtxt { flex: 1; min-width: 0; padding-right: 18px; }
+    .pinfo-title {
+      font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700;
+      color: var(--ink); line-height: 1.2; margin-bottom: 4px;
+    }
+    .pinfo-meta { font-size: 14px; font-weight: 600; color: var(--ink-dim); margin-bottom: 10px; }
+    .pinfo-price { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+    .pinfo-was { font-size: 13px; color: var(--ink-faint); text-decoration: line-through; }
+    .pinfo-now { font-size: 19px; font-weight: 800; color: var(--ink); }
+    .pinfo-pct {
+      font-size: 11px; font-weight: 700; color: var(--green);
+      background: rgba(46,158,92,.1); border-radius: 5px; padding: 1px 6px;
+    }
+    .pinfo-stars { font-size: 13px; color: #F5B301; letter-spacing: 1px; }
+    .pinfo-stars span { color: var(--ink-dim); font-size: 11px; letter-spacing: 0; margin-left: 4px; }
+    .pinfo-awards { margin: 16px 0 4px; text-align: center; }
+    .pinfo-awards img { max-width: 100%; height: auto; }
+    .pinfo-desc {
+      margin-top: 14px; font-size: 13.5px; line-height: 1.6; color: var(--ink-2);
+      border-top: 1px solid rgba(26,22,16,.1); padding-top: 14px;
+    }
+    .pinfo-desc p { margin-bottom: 8px; }
+    .pinfo-choose-btn {
+      display: block; width: 100%; text-align: center; margin-top: 18px;
+      font-family: inherit; font-size: 15px; font-weight: 800; color: var(--ink-2);
+      cursor: pointer; padding: 14px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg,var(--gold-lt) 0%,var(--gold) 60%,var(--gold-dk) 100%);
+      box-shadow: 0 6px 22px rgba(201,168,62,.45);
+      transition: transform .18s, box-shadow .18s;
+    }
+    .pinfo-choose-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(201,168,62,.6); }
+
+    /* Total saving pill */
+    .save-pill {
+      margin-top: 7px;
+      display: flex; align-items: center; gap: 5px;
+      background: linear-gradient(135deg, rgba(39,168,90,.13), rgba(39,168,90,.07));
+      border: 1px solid rgba(39,168,90,.28);
+      border-radius: 7px; padding: 5px 9px;
+      font-size: 10px; font-weight: 700; color: #1a7a3a; line-height: 1.3;
+    }
+    .save-pill span { font-weight: 400; color: #2a6a3a; }
+
+    /* Per-card award badges strip */
+    .card-awards {
+      margin-top: 9px;
+      border-top: 1px solid rgba(26,22,16,.07);
+      padding-top: 8px;
+    }
+    .card-awards img {
+      display: block; width: 100%; height: auto;
+      object-fit: contain; max-height: 64px;
+      filter: grayscale(15%);
+      transition: filter .2s;
+    }
+    .pcard:hover .card-awards img { filter: none; }
+
+    .cprice { font-size: 16px; font-weight: 700; margin-top: auto; color: var(--ink); }
+    .cprice .free-p {
+      font-size: 17px; font-weight: 900; letter-spacing: .04em;
+      background: linear-gradient(110deg, var(--gold-dk) 0%, var(--gold-lt) 25%, var(--gold) 45%, var(--gold-lt) 65%, var(--gold-dk) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      animation: free-text-shimmer 2.8s linear infinite;
+    }
+    @keyframes free-text-shimmer { to { background-position: -200% center; } }
+    .cprice .orig-p { color: var(--ink-faint); font-size: 11px; font-weight: 400; text-decoration: line-through; margin-left: 4px; }
+
+    .size-wrap { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(26,22,16,.08); }
+    .size-lbl { display: block; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px; }
+    .size-one { font-size: 13px; color: var(--ink-dim); padding: 4px 0; }
+    .sz-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sz-pill {
+      flex: 1 1 auto; min-width: 52px;
+      background: #f5f0e8; border: 1.5px solid rgba(26,22,16,.15);
+      border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 600;
+      color: var(--ink-dim); padding: 7px 6px; cursor: pointer; text-align: center;
+      transition: border-color .15s, background .15s, color .15s, transform .1s;
+      line-height: 1.2;
+    }
+    .sz-pill:hover { border-color: var(--gold-bd); background: #fff; color: var(--ink); }
+    .sz-pill.active {
+      border-color: var(--gold); background: rgba(201,168,62,.12);
+      color: var(--ink); box-shadow: 0 0 0 1px var(--gold-bd);
+    }
+    @keyframes sz-pulse {
+      0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(201,168,62,.6); }
+      40%  { transform: scale(1.07); box-shadow: 0 0 0 6px rgba(201,168,62,.0); }
+      100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(201,168,62,.0); }
+    }
+    .sz-pills.needs-size .sz-pill {
+      border-color: var(--gold) !important;
+      animation: sz-pulse .5s ease forwards;
+    }
+    .sz-pills.needs-size .sz-pill:nth-child(2) { animation-delay: .07s; }
+    .sz-pills.needs-size .sz-pill:nth-child(3) { animation-delay: .14s; }
+    /* Sold-out size pill */
+    .sz-pill--out {
+      opacity: .38; cursor: not-allowed;
+      text-decoration: line-through; pointer-events: none;
+    }
+    .pill-out { font-size: 10px; }
+
+    /* Sold-out gift card */
+    .pcard.sold-out {
+      opacity: .55; cursor: not-allowed; pointer-events: none;
+      filter: grayscale(.6);
+    }
+    .pcard.sold-out .badge-free {
+      background: #888; color: #fff;
+    }
+    .sold-out-p { color: #999; font-size: 13px; font-weight: 600; }
+    .sold-out-lbl { color: #999; }
+
+    /* ══════════════════════════════════════════════════════════
+       SLIDE 4 — CHOOSE GIFT
+    ══════════════════════════════════════════════════════════ */
+    .chosen-banner {
+      background: var(--card-solid); border: 1.5px solid var(--gold-bd);
+      border-radius: 12px; padding: 13px 16px;
+      display: flex; align-items: center; gap: 12px;
+      max-width: 560px; margin: 0 auto 30px;
+      box-shadow: 0 2px 12px rgba(26,22,16,.07);
+    }
+    .chosen-banner img { width: 38px; height: 52px; object-fit: contain; flex-shrink: 0; }
+    .chosen-info strong { display: block; font-size: 13px; font-weight: 600; color: var(--ink); }
+    .chosen-info span { font-size: 11px; color: var(--gold-dk); font-weight: 600; }
+    .change-btn {
+      margin-left: auto; background: none; border: 1.5px solid rgba(26,22,16,.2);
+      color: var(--ink-dim); font-size: 11px; padding: 5px 10px; border-radius: 6px;
+      cursor: pointer; white-space: nowrap; font-family: inherit; transition: all .2s;
+    }
+    .change-btn:hover { border-color: var(--gold); color: var(--gold-dk); }
+
+    /* ══════════════════════════════════════════════════════════
+       SLIDE 5 — CLAIM
+    ══════════════════════════════════════════════════════════ */
+    .claim-card {
+      background: var(--card-solid); border: 1.5px solid var(--gold-bd);
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 8px 40px rgba(26,22,16,.12);
+    }
+    .claim-hdr {
+      background: linear-gradient(135deg,rgba(201,168,62,.12),rgba(201,168,62,.03));
+      padding: 22px 26px; border-bottom: 1px solid var(--gold-bd);
+    }
+    .claim-hdr h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 26px; font-weight: 600; color: var(--ink); margin-bottom: 3px;
+    }
+    .claim-hdr p { font-size: 12px; color: var(--ink-dim); }
+    .discount-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
+      color: var(--ink-2); font-size: 12px; font-weight: 700;
+      border-radius: 7px; padding: 5px 11px; margin-top: 9px; letter-spacing: .01em;
+    }
+    .claim-rows { padding: 4px 26px; }
+    .claim-row { display: flex; align-items: center; gap: 13px; padding: 17px 0; }
+    .claim-row + .claim-row { border-top: 1px solid rgba(26,22,16,.08); }
+    .claim-row img { width: 48px; height: 64px; object-fit: contain; flex-shrink: 0; }
+    .claim-row-info { flex: 1; min-width: 0; }
+    .claim-row-info strong { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+    .claim-row-info span { font-size: 11px; color: var(--ink-dim); }
+    .claim-price { text-align: right; flex-shrink: 0; font-size: 14px; font-weight: 700; color: var(--ink); }
+    .free-tag { font-size: 13px; font-weight: 700; color: var(--green); }
+    .was-price { font-size: 11px; color: var(--ink-faint); text-decoration: line-through; display: block; margin-top: 1px; }
+    .claim-ftr {
+      padding: 20px 26px 28px; border-top: 1px solid rgba(26,22,16,.08);
+      background: rgba(248,244,236,.6);
+    }
+    .claim-btn {
+      display: block; width: 100%; padding: 17px;
+      background: linear-gradient(135deg,var(--gold-lt) 0%,var(--gold) 55%,var(--gold-dk) 100%);
+      color: var(--ink-2); font-weight: 700; font-size: 17px;
+      text-align: center; border: none; border-radius: 11px;
+      cursor: pointer; font-family: inherit; letter-spacing: .02em; transition: all .25s;
+    }
+    .claim-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px var(--gold-glow); }
+    .claim-leg { font-size: 11px; color: var(--ink-faint); text-align: center; margin-top: 14px; line-height: 1.65; }
+    .claim-leg a { color: var(--gold-dk); text-decoration: none; }
+
+    /* ── Sticky bar ─────────────────────────────────────────── */
+    #sticky-bar {
+      position: sticky; bottom: 0; z-index: 100;
+      background: var(--dark-bg); border-top: 1px solid var(--dark-bd);
+      padding: 11px 20px;
+      display: flex; align-items: center; gap: 12px;
+      transform: translateY(100%);
+      transition: transform .4s cubic-bezier(.34,1.3,.64,1);
+    }
+    #sticky-bar.up { transform: translateY(0); }
+    .sb-items { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .sb-name { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; color: var(--dark-text); }
+    .sb-sep  { color: var(--gold); font-size: 13px; flex-shrink: 0; }
+    .sb-cta  {
+      display: none; flex-shrink: 0;
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
+      color: var(--ink-2); font-weight: 700; font-size: 12px;
+      padding: 9px 16px; border-radius: 8px; border: none;
+      cursor: pointer; white-space: nowrap; font-family: inherit; transition: all .2s;
+    }
+
+    /* ── Awards / trust strip ──────────────────────────────── */
+    .awards-strip {
+      margin: 36px 0 0;
+      background: var(--dark-bg);
+      border-radius: 20px;
+      border: 1px solid var(--dark-bd);
+      overflow: hidden;
+    }
+    .awards-top {
+      padding: 22px 24px 18px;
+      border-bottom: 1px solid rgba(201,168,62,.15);
+      text-align: center;
+    }
+    .awards-top-eyebrow {
+      font-size: 9px; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--gold-dk); margin-bottom: 6px;
+    }
+    .awards-top-heading {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(20px,4vw,28px); font-weight: 700;
+      color: var(--dark-text); line-height: 1.15;
+    }
+    .awards-top-heading span {
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    /* Award medals row */
+    .awards-medals {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      border-bottom: 1px solid rgba(201,168,62,.12);
+    }
+    .medal-item {
+      padding: 18px 10px 16px;
+      display: flex; flex-direction: column; align-items: center;
+      border-right: 1px solid rgba(201,168,62,.12); text-align: center;
+    }
+    .medal-item:last-child { border-right: none; }
+    .medal-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(26px,5vw,38px); font-weight: 700;
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      line-height: 1; margin-bottom: 3px;
+    }
+    .medal-label {
+      font-size: 9px; font-weight: 600; color: var(--dark-dim);
+      text-transform: uppercase; letter-spacing: .1em; line-height: 1.4;
+    }
+    /* Trust pills row */
+    .awards-trust {
+      display: flex; align-items: stretch;
+    }
+    .trust-item {
+      flex: 1; display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px;
+      border-right: 1px solid rgba(201,168,62,.12);
+    }
+    .trust-item:last-child { border-right: none; }
+    .trust-icon { font-size: 20px; flex-shrink: 0; }
+    .trust-text strong {
+      display: block; font-size: 12px; font-weight: 700;
+      color: var(--dark-text); line-height: 1.2;
+    }
+    .trust-text span { font-size: 10px; color: var(--dark-dim); }
+    @media(max-width:480px){
+      .awards-medals { grid-template-columns: repeat(2,1fr); }
+      .medal-item:nth-child(2) { border-right: none; }
+      .medal-item:nth-child(3) { border-top: 1px solid rgba(201,168,62,.12); }
+      .medal-item:nth-child(4) { border-top: 1px solid rgba(201,168,62,.12); }
+      .awards-trust { flex-wrap: wrap; }
+      .trust-item { flex: 1 1 50%; border-bottom: 1px solid rgba(201,168,62,.12); }
+      .trust-item:nth-child(even) { border-right: none; }
+      .trust-item:nth-last-child(-n+2) { border-bottom: none; }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       URGENCY BAR — sticky below header, personal countdown
+    ══════════════════════════════════════════════════════════ */
+    .urgency-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 190;
+      background: linear-gradient(90deg,#0e0800,#1a1005,#0e0800);
+      border-top: 1px solid rgba(201,168,62,.28);
+      padding: 8px 20px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; flex-wrap: wrap; text-align: center;
+      font-size: 12px; color: rgba(245,240,232,.7); font-weight: 500;
+      box-shadow: 0 -4px 24px rgba(0,0,0,.4);
+    }
+    .urgency-bar.hidden { display: none; }
+    .ub-seg { display: flex; align-items: center; gap: 5px; }
+    .ub-dot {
+      display: inline-block; width: 7px; height: 7px;
+      background: #4ade80; border-radius: 50%; flex-shrink: 0;
+      animation: ub-pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes ub-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.55)} }
+    .ub-count { font-weight: 800; color: #fff; }
+    .ub-sep { opacity: .3; }
+    .ub-clock { display: flex; align-items: center; gap: 5px; }
+    .ub-clock-icon { font-size: 13px; }
+    .ub-timer {
+      font-variant-numeric: tabular-nums; font-weight: 900;
+      font-size: 13px; letter-spacing: .07em; color: var(--gold-lt);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       CONFETTI CANVAS
+    ══════════════════════════════════════════════════════════ */
+    #confetti-canvas {
+      position: fixed; inset: 0; z-index: 600; pointer-events: none; display: none;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       LEAD GATE MODAL
+    ══════════════════════════════════════════════════════════ */
+    .gate-modal {
+      position: fixed; inset: 0; z-index: 600;
+      background: rgba(6,4,1,.92);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .gate-modal.show { opacity: 1; pointer-events: all; }
+    .gate-box {
+      background: var(--dark-bg);
+      border: 1.5px solid var(--gold);
+      border-radius: 24px; padding: 32px 24px 28px;
+      text-align: center; max-width: 420px; width: 100%;
+      max-height: 92vh; overflow-y: auto;
+      box-shadow: 0 0 60px rgba(201,168,62,.2), 0 32px 80px rgba(0,0,0,.75);
+      transform: scale(.86) translateY(22px);
+      transition: transform .22s ease-in; /* closing — fast, no bounce */
+    }
+    .gate-modal.show .gate-box {
+      transform: scale(1) translateY(0);
+      transition: transform .45s cubic-bezier(.34,1.56,.64,1); /* opening — spring bounce */
+    }
+    .gate-eyebrow {
+      font-size: 10px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+    }
+    .gate-title {
+      font-size: 22px; font-weight: 800; color: var(--dark-text);
+      line-height: 1.25; margin-bottom: 6px;
+    }
+    .gate-sub {
+      font-size: 13px; color: var(--dark-dim); margin-bottom: 22px; line-height: 1.5;
+    }
+    .gate-form { text-align: left; }
+    .gate-field { margin-bottom: 14px; }
+    .gate-label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--gold); letter-spacing: .06em; text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .gate-input, .gate-select {
+      width: 100%; padding: 11px 14px;
+      background: rgba(255,255,255,.06);
+      border: 1.5px solid rgba(201,168,62,.3);
+      border-radius: 10px;
+      color: var(--dark-text); font-family: inherit; font-size: 16px; /* 16px min prevents iOS Safari zoom */
+      outline: none; transition: border-color .2s;
+      -webkit-appearance: none; appearance: none;
+    }
+    .gate-input:focus, .gate-select:focus { border-color: var(--gold); }
+    .gate-input::placeholder { color: rgba(245,240,232,.28); }
+    .gate-select option { background: #1E1A12; color: #fff; }
+    .gate-select-wrap { position: relative; }
+    .gate-select-wrap::after {
+      content: '▾'; position: absolute; right: 13px; top: 50%;
+      transform: translateY(-50%); color: var(--gold); pointer-events: none;
+      font-size: 13px;
+    }
+    .gate-err {
+      font-size: 12px; color: #e74c3c; margin-top: 4px; display: none;
+    }
+    .gate-err.show { display: block; }
+    .gate-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-lt), var(--gold));
+      background-color: var(--gold);
+      border: none; border-radius: 50px;
+      font-family: inherit; font-size: 16px; font-weight: 800;
+      color: var(--ink); cursor: pointer; margin-top: 8px;
+      transition: opacity .2s, transform .15s;
+    }
+    .gate-btn:hover { opacity: .9; transform: translateY(-1px); }
+    .gate-btn:active { transform: scale(.98); }
+    .gate-legal {
+      font-size: 11px; color: var(--dark-faint); margin-top: 12px; text-align: center;
+    }
+
+    /* NL blocked state */
+    .gate-blocked { display: none; text-align: center; }
+    .gate-blocked.show { display: block; }
+    .gate-blocked-icon { font-size: 52px; margin-bottom: 12px; }
+    .gate-blocked-title {
+      font-size: 20px; font-weight: 800; color: var(--dark-text); margin-bottom: 10px;
+    }
+    .gate-blocked-msg {
+      font-size: 13px; color: var(--dark-dim); line-height: 1.6; margin-bottom: 24px;
+    }
+    .gate-blocked-btn {
+      display: inline-block; padding: 13px 32px;
+      border: 2px solid var(--gold); border-radius: 50px;
+      color: var(--gold); font-family: inherit; font-size: 14px; font-weight: 700;
+      text-decoration: none; transition: background .2s, color .2s;
+    }
+    .gate-blocked-btn:hover { background: var(--gold); color: var(--ink); }
+
+    /* Gate — loading / redirecting state */
+    .gate-loading { display: none; text-align: center; padding: 20px 0 8px; }
+    .gate-loading.show { display: block; }
+    .gate-spinner {
+      width: 52px; height: 52px;
+      border: 4px solid rgba(201,168,62,.22);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      animation: gate-spin .85s linear infinite;
+    }
+    @keyframes gate-spin { to { transform: rotate(360deg); } }
+    .gate-loading-title {
+      font-size: 19px; font-weight: 700;
+      color: var(--gold-lt); margin-bottom: 8px;
+    }
+    .gate-loading-sub { color: var(--dark-dim); font-size: 13px; line-height: 1.5; }
+
+    /* Gate modal — mobile layout fixes
+       align-items:flex-start keeps box near top so keyboard doesn't hide it */
+    @media (max-width: 480px) {
+      .gate-modal {
+        align-items: flex-start;
+        padding: 10px 12px 0;
+      }
+      .gate-box {
+        padding: 20px 16px 18px;
+        border-radius: 18px;
+        max-height: calc(100dvh - 10px);
+        max-height: calc(100vh - 10px); /* dvh fallback */
+      }
+      .gate-title { font-size: 19px; }
+      .gate-sub { font-size: 12px; margin-bottom: 16px; }
+      .gate-field { margin-bottom: 10px; }
+      .gate-btn { padding: 13px; font-size: 15px; }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       CLAIM POPUP MODAL
+    ══════════════════════════════════════════════════════════ */
+    .claim-modal {
+      position: fixed; inset: 0; z-index: 550;
+      background: rgba(6,4,1,.92);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .claim-modal.show { opacity: 1; pointer-events: all; }
+    .claim-box {
+      background: var(--dark-bg);
+      border: 1.5px solid var(--gold);
+      border-radius: 24px; padding: 32px 24px 28px;
+      text-align: center; max-width: 400px; width: 100%;
+      max-height: 92vh; overflow-y: auto;
+      box-shadow: 0 0 60px rgba(201,168,62,.2), 0 32px 80px rgba(0,0,0,.75);
+      transform: scale(.86) translateY(22px);
+      transition: transform .22s ease-in; /* closing */
+    }
+    .claim-modal.show .claim-box {
+      transition: transform .45s cubic-bezier(.34,1.56,.64,1); /* opening spring */
+    }
+    .claim-modal.show .claim-box { transform: scale(1) translateY(0); }
+
+    .claim-emoji { font-size: 46px; line-height: 1; display: block; margin-bottom: 8px; }
+    .claim-eyebrow {
+      font-size: 10px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+    }
+    .claim-headline {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(24px,5.5vw,34px); font-weight: 700;
+      line-height: 1.1; color: var(--white); margin-bottom: 4px;
+    }
+    .claim-headline .cm-save-amt {
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .claim-sub { font-size: 12px; color: var(--dark-dim); margin-bottom: 16px; line-height: 1.5; }
+
+    /* Selection pills */
+    .sel-summary { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+    .sel-pill {
+      flex: 1 1 0; min-width: 0;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(201,168,62,.18);
+      border-radius: 10px; padding: 8px 10px;
+      display: flex; align-items: center; gap: 8px; text-align: left;
+    }
+    .sel-pill-img {
+      width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;
+      border-radius: 6px; background: rgba(255,255,255,.07); padding: 2px;
+    }
+    .sel-pill-emoji {
+      width: 44px; height: 44px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; border-radius: 6px; background: rgba(255,255,255,.07);
+    }
+    .ship-free { color: var(--gold-lt) !important; font-weight: 800; }
+    .sel-pill-txt { min-width: 0; }
+    .sel-pill strong {
+      display: block; font-size: 8px; color: var(--gold);
+      letter-spacing: .14em; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .sel-pill span { font-size: 11px; color: var(--dark-text); line-height: 1.3; display: block; }
+
+    /* Savings breakdown */
+    .savings-bd {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(201,168,62,.18);
+      border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; text-align: left;
+    }
+    .sb-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 5px 0; font-size: 12px; color: var(--dark-dim);
+      border-bottom: 1px solid rgba(201,168,62,.07);
+    }
+    .sb-row:last-of-type { border-bottom: none; }
+    .sb-orig { color: var(--dark-faint); font-size: 12px; }
+    .sb-save { color: #4ade80; font-weight: 700; }
+    .sb-rrp-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0 4px; font-size: 11px; color: rgba(245,240,232,.38);
+    }
+    .sb-rrp-amt { text-decoration: line-through; color: rgba(245,240,232,.38); }
+    .sb-saving-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 2px 0 10px; font-size: 15px; font-weight: 700; color: #4ade80;
+      border-bottom: 1px solid rgba(201,168,62,.18); margin-bottom: 2px;
+    }
+    .sb-pay-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0 6px; margin-top: 4px;
+      border-top: 1px solid rgba(201,168,62,.3);
+      font-size: 13px; font-weight: 700; color: var(--white);
+    }
+    .sb-pay-amt {
+      font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 700;
+      color: var(--white); line-height: 1;
+    }
+    .sb-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 10px; margin-top: 6px;
+      border-top: 1px solid rgba(201,168,62,.28);
+      font-size: 13px; font-weight: 700; color: var(--white);
+    }
+    .sb-total-amt {
+      font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 700;
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      line-height: 1;
+    }
+
+    /* Shipping lines (inside savings-bd) */
+    .ship-line {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; color: rgba(245,240,232,.45); padding: 4px 0;
+    }
+    .ship-line + .ship-line { border-top: 1px solid rgba(255,255,255,.06); }
+
+    /* Social proof / reason-why in modal */
+    .cm-social {
+      text-align: center;
+      background: rgba(201,168,62,.07); border: 1px solid rgba(201,168,62,.22);
+      border-radius: 12px; padding: 13px 16px; margin-bottom: 16px;
+    }
+    .cm-social-stars {
+      font-size: 16px; letter-spacing: 3px; color: var(--gold-lt);
+      margin-bottom: 6px;
+    }
+    .cm-social-quote {
+      font-size: 15px; font-weight: 600; font-style: italic;
+      color: var(--gold-lt); margin-bottom: 5px; line-height: 1.3;
+    }
+    .cm-social-reason {
+      font-size: 11.5px; color: var(--dark-dim); line-height: 1.5;
+    }
+
+    /* Claim CTA button */
+    .btn-claim {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%;
+      background: linear-gradient(135deg,var(--gold-lt) 0%,var(--gold) 60%,var(--gold-dk) 100%);
+      color: var(--ink-2); font-weight: 900; font-size: 16px;
+      padding: 16px 20px; border-radius: 14px; border: none;
+      cursor: pointer; font-family: inherit; letter-spacing: .02em;
+      box-shadow: 0 6px 28px rgba(201,168,62,.5);
+      transition: transform .2s, box-shadow .2s;
+      margin-bottom: 12px;
+    }
+    .btn-claim:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(201,168,62,.8); }
+    .btn-change-sel {
+      background: none; border: none; color: var(--dark-dim);
+      font-size: 12px; cursor: pointer; font-family: inherit;
+      text-decoration: underline; text-underline-offset: 3px;
+      transition: color .2s;
+    }
+    .btn-change-sel:hover { color: var(--dark-text); }
+    @media(max-width:380px){
+      .claim-box { padding: 26px 16px 22px; }
+      .sel-summary { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════ -->
+<header>
+  <button id="hdr-back" onclick="goBack()" aria-label="Back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <a href="https://irishpremiumspirits.eu" class="hdr-logo" target="_blank">
+    <img src="https://irishpremiumspirits.eu/cdn/shop/files/newirish-premium-spirits-logo_e065ddcb-b42b-4fb2-8d98-922c583a403b_3.svg?v=1705403158&width=300" alt="Irish Premium Spirits" />
+  </a>
+  <div class="hdr-steps" style="display:none;">
+    <div class="sdot active" id="d1">1</div><div class="sline"></div>
+    <div class="sdot" id="d2">2</div>
+  </div>
+</header>
+
+<!-- Urgency bar — sticky below header, counts down per visitor -->
+<div class="urgency-bar" id="urgency-bar">
+  <span class="ub-seg">
+    <span class="ub-dot"></span>
+    <span class="ub-count" id="live-count">24</span> people viewing this offer right now
+  </span>
+  <span class="ub-sep">·</span>
+  <span class="ub-clock">
+    <span class="ub-clock-icon">⏰</span>
+    Your offer expires in <span class="ub-timer" id="hdr-timer">22:00:35</span>
+  </span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SLIDES VIEWPORT
+═══════════════════════════════════════════════════════════ -->
+<div class="slides-vp" id="slides-vp">
+
+  <!-- ─── SLIDE 1 — CHOOSE BOTTLE ─────────────────────────── -->
+  <div class="slide" id="slide-bottles">
+    <div class="inner step-wrap">
+      <div class="sec-hdr">
+        <div class="sec-badge">☀️ Summer Special — Members Only</div>
+        <h2 class="sec-title">Any Bottle,<br><span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span> Shipping</h2>
+        <p class="hero-pitch">Pick your bottle, we ship it <strong>free</strong> — save up to <strong>€22.99</strong> on delivery. While summer stock lasts. ☘️</p>
+        <div class="hero-perks">
+          <div class="hero-perk">
+            <span class="hp-icon">🚚</span>
+            <div class="hp-text"><strong>FREE shipping</strong><span>Save up to €22.99</span></div>
+          </div>
+          <div class="hero-perk">
+            <span class="hp-icon">🏆</span>
+            <div class="hp-text"><strong>Award-winning</strong><span>Premium Irish spirits</span></div>
+          </div>
+          <div class="hero-perk">
+            <span class="hp-icon">📦</span>
+            <div class="hp-text"><strong>Tracked & secure</strong><span>Fast dispatch</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pgrid" id="bottle-grid"></div>
+
+      <!-- Reviews / social proof strip -->
+      <div class="reviews-strip">
+        <div class="reviews-hd">
+          <span class="reviews-stars">★★★★★</span>
+          <span class="reviews-hd-txt">&ldquo;Once tried, never forgotten.&rdquo;</span>
+          <span class="reviews-hd-sub">Rated 4.8 stars by thousands of returning customers.</span>
+        </div>
+        <div class="reviews-marquee">
+          <div class="reviews-track" id="reviews-track">
+            <!-- cards injected + duplicated by JS for seamless loop -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /slide-bottles -->
+
+  <!-- ─── SLIDE 2 — CHOOSE GIFT ──────────────────────────── -->
+  <div class="slide" id="slide-gifts">
+    <div class="inner step-wrap">
+      <div class="sec-hdr">
+        <div class="sec-badge">Step 2 of 2 — Your FREE 50cl</div>
+        <h2 class="sec-title">Choose Your <span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span> Bottle</h2>
+        <p class="sec-sub" style="margin:0 auto;color:#111;font-size:15px;font-weight:600;">Pick <span style="background:var(--gold);color:#000;font-weight:800;padding:1px 7px;border-radius:5px;">1 bottle</span> below — added free to your order</p>
+      </div>
+      <div class="pgrid" id="gift-grid"></div>
+
+      <!-- Reviews / social proof strip (same as bottle page) -->
+      <div class="reviews-strip">
+        <div class="reviews-hd">
+          <span class="reviews-stars">★★★★★</span>
+          <span class="reviews-hd-txt">&ldquo;Once tried, never forgotten.&rdquo;</span>
+          <span class="reviews-hd-sub">Rated 4.8 stars by thousands of returning customers.</span>
+        </div>
+        <div class="reviews-marquee">
+          <div class="reviews-track">
+            <!-- cards injected + duplicated by JS for seamless loop -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /slide-gifts -->
+
+</div><!-- /slides-vp -->
+
+
+
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Lead gate modal — collects details, blocks NL, prefills checkout -->
+<div class="gate-modal" id="gate-modal" onclick="if(event.target===this){history.back();}">
+  <div class="gate-box">
+
+    <!-- Form state -->
+    <div id="gate-form-state">
+      <div class="gate-eyebrow">🔒 Almost There</div>
+      <div class="gate-title">Just a couple of details</div>
+      <p class="gate-sub">To claim your FREE 50cl bottle, please confirm your details below.</p>
+
+      <form class="gate-form" id="gate-form" onsubmit="return submitGate(event)">
+
+        <div class="gate-field">
+          <label class="gate-label" for="gate-name">Full Name</label>
+          <input class="gate-input" id="gate-name" type="text" placeholder="e.g. John Murphy" autocomplete="name" required />
+          <div class="gate-err" id="gate-err-name">Please enter your full name.</div>
+        </div>
+
+        <div class="gate-field">
+          <label class="gate-label" for="gate-email">Email Address</label>
+          <input class="gate-input" id="gate-email" type="email" placeholder="you@example.com" autocomplete="email" required />
+          <div class="gate-err" id="gate-err-email">Please enter a valid email address.</div>
+        </div>
+
+        <div class="gate-field">
+          <label class="gate-label" for="gate-yob">Year of Birth</label>
+          <input class="gate-input" id="gate-yob" type="number" placeholder="e.g. 1990" min="1900" max="2099" autocomplete="bday-year" required />
+          <div class="gate-err" id="gate-err-yob">You must be 18 or over to claim this offer.</div>
+        </div>
+
+        <div class="gate-field">
+          <label class="gate-label" for="gate-country">Country</label>
+          <div class="gate-select-wrap">
+            <select class="gate-select" id="gate-country" required>
+              <option value="">Select your country…</option>
+              <option value="IE">Ireland</option>
+              <option value="GB">United Kingdom</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="BE">Belgium</option>
+              <option value="AT">Austria</option>
+              <option value="CH">Switzerland</option>
+              <option value="ES">Spain</option>
+              <option value="IT">Italy</option>
+              <option value="PT">Portugal</option>
+              <option value="SE">Sweden</option>
+              <option value="NO">Norway</option>
+              <option value="DK">Denmark</option>
+              <option value="FI">Finland</option>
+              <option value="PL">Poland</option>
+              <option value="CZ">Czech Republic</option>
+              <option value="NL">Netherlands</option>
+              <option value="AU">Australia</option>
+              <option value="CA">Canada</option>
+              <option value="US">United States</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+          <div class="gate-err" id="gate-err-country">Please select your country.</div>
+        </div>
+
+        <button class="gate-btn" type="submit">Claim My Offer Now &rarr;</button>
+        <p class="gate-legal">By continuing you confirm you are 18+ and agree to receive occasional offers from Irish Premium Spirits. No spam, unsubscribe anytime.</p>
+      </form>
+    </div>
+
+    <!-- Netherlands blocked state -->
+    <div class="gate-blocked" id="gate-blocked">
+      <div class="gate-blocked-icon">🌍</div>
+      <div class="gate-blocked-title">Sorry, not available in your region</div>
+      <p class="gate-blocked-msg">This promotion isn't currently available in the Netherlands. You can still browse our full award-winning range and shop on our main site.</p>
+      <a class="gate-blocked-btn" href="https://irishpremiumspirits.eu">Shop Irish Premium Spirits &rarr;</a>
+    </div>
+
+    <!-- Loading / redirecting state -->
+    <div class="gate-loading" id="gate-loading">
+      <div class="gate-spinner"></div>
+      <div class="gate-loading-title">Taking you to checkout…</div>
+      <p class="gate-loading-sub">Locking in your FREE 50cl bottle.<br>Just a moment.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- Claim popup modal — shown after both bottle + gift selected -->
+<div class="claim-modal" id="claim-modal" onclick="if(event.target===this){history.back();}">
+  <div class="claim-box">
+    <span class="claim-emoji">🎉</span>
+    <div class="claim-eyebrow">Your Exclusive Offer Is Ready</div>
+    <h2 class="claim-headline">You're saving <span class="cm-save-amt" id="cm-save-amt">€0.00</span> today!</h2>
+    <p class="claim-sub">Your bottle is locked in — complete your order to claim your FREE shipping.</p>
+    <div class="sel-summary">
+      <div class="sel-pill">
+        <img class="sel-pill-img" id="cm-bottle-img" src="" alt="" />
+        <div class="sel-pill-txt"><strong>Your Bottle</strong><span id="cm-bottle-name">—</span></div>
+      </div>
+      <div class="sel-pill">
+        <span class="sel-pill-emoji">🚚</span>
+        <div class="sel-pill-txt"><strong>Delivery</strong><span class="ship-free">FREE Shipping</span></div>
+      </div>
+    </div>
+    <div class="savings-bd">
+      <div class="sb-rrp-row">
+        <span>Bottle + standard shipping</span>
+        <span class="sb-rrp-amt">€<span id="cm-rrp">0.00</span></span>
+      </div>
+      <div class="sb-saving-row">
+        <span>Your shipping</span>
+        <span id="cm-saving-lbl" style="font-size:18px;font-weight:800;letter-spacing:-.01em;">FREE</span>
+      </div>
+      <div class="ship-line"><span>You pay (bottle only)</span><span id="cm-items-total">—</span></div>
+    </div>
+    <div class="cm-social">
+      <div class="cm-social-stars">★★★★★</div>
+      <div class="cm-social-quote">&ldquo;Once tried, never forgotten.&rdquo;</div>
+      <div class="cm-social-reason">Award-winning Irish spirits, delivered free to your door. Once tried, never forgotten.</div>
+    </div>
+    <button class="btn-claim" onclick="claimOffer()">Claim My Offer Now &rarr;</button>
+    <button class="btn-change-sel" onclick="changeSelection()">&#8592; Change my selection</button>
+  </div>
+</div>
+
+<!-- Product info modal -->
+<div class="pinfo-modal" id="pinfo-modal" onclick="if(event.target===this){history.back();}">
+  <div class="pinfo-box">
+    <button class="pinfo-close" onclick="history.back()" aria-label="Close">&times;</button>
+    <div class="pinfo-head">
+      <div class="pinfo-imgwrap"><img id="pi-img" src="" alt="" /></div>
+      <div class="pinfo-headtxt">
+        <h3 class="pinfo-title" id="pi-title">—</h3>
+        <div class="pinfo-meta" id="pi-meta">—</div>
+        <div class="pinfo-price">
+          <span class="pinfo-was" id="pi-was"></span>
+          <span class="pinfo-now" id="pi-now">—</span>
+          <span class="pinfo-pct">+ FREE shipping</span>
+        </div>
+        <div class="pinfo-stars">★★★★★ <span>4.8 · verified reviews</span></div>
+      </div>
+    </div>
+    <div class="pinfo-awards" id="pi-awards"></div>
+    <div class="pinfo-desc" id="pi-desc"></div>
+    <button class="pinfo-choose-btn" id="pi-choose-btn">Choose this bottle &rarr;</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPT
+═══════════════════════════════════════════════════════════ -->
+<script>
+/* ── Config ──────────────────────────────────────────────── */
+const CFG = {
+  store:        'https://irishpremiumspirits.eu',
+  discountCode: 'FREESHIP',  // ← Shopify free-shipping code
+  discountPct:  0,           // no % off the bottle on this offer
+};
+
+/* ── Product data — 70cl bottles to purchase ─────────────── */
+const BOTTLES = [
+  { id:47512979898710,  title:'The Exiles Irish Gin',             type:'Irish Gin',             cat:'gin',     abv:'41.3%', size:'700mL', price:29.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/exiles-gin.remini-enhanced.jpg?v=1705392555',          awards:'https://irishpremiumspirits.eu/cdn/shop/files/gin-awards_1.webp?v=1705654136' },
+  { id:47512979734870,  title:'The Wild Geese® Classic Blend',    type:'Irish Whiskey',          cat:'whiskey', abv:'40%',   size:'700mL', price:34.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/The-Wild-Geese-Irish-Whiskey-Classic-Blend-70.jpg?v=1705392534', awards:'https://irishpremiumspirits.eu/cdn/shop/files/classic-awards.png?v=1705654522' },
+  { id:47512979964246,  title:'Untamed® Irish Vodka',             type:'Irish Vodka',            cat:'vodka',   abv:'40%',   size:'700mL', price:37.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/Untamed-Irish-Vodka_aab480d1-7c4e-4edc-a2cb-e632b8e9250e.jpg?v=1705392562',   awards:'https://irishpremiumspirits.eu/cdn/shop/files/vodka_awards.webp?v=1705654862' },
+  { id:51503786885462,  title:'The Wild Geese® Golden Rum',       type:'Irish Rum',              cat:'rum',     abv:'37.5%', size:'700mL', price:33.99, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/The-Wild-Geese-Golden-Rum_779d9828-5ad3-4cc9-9a89-f218f8295535.jpg?v=1705392551', awards:'https://irishpremiumspirits.eu/cdn/shop/files/golden_awards.webp?v=1705654422' },
+  // ── Hidden for now (set hide:false to bring back) ──
+  { id:53045365145942,  title:'The Wild Geese® Limited Edition',  type:'Irish Whiskey',          cat:'whiskey', abv:'43%',   size:'700mL', price:64.99, hide:true, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/The-Wild-Geese-Irish-Whiskey-ltd-edition.jpg?v=1744691067',  awards:'https://irishpremiumspirits.eu/cdn/shop/files/ltd-awards_1.png?v=1705654586' },
+  { id:47512980062550,  title:'The Wild Geese® Single Malt',      type:'Single Malt Whiskey',   cat:'whiskey', abv:'43%',   size:'700mL', price:69.99, hide:true, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/The-Wild-Geese-Irish-Whiskey-single-malt_5da53c0c-9829-4ba3-935a-c5d32b288e20.jpg?v=1744692270', awards:'https://irishpremiumspirits.eu/cdn/shop/files/Single_malt_awards_1.png?v=1705654736' },
+  { id:47512980193622,  title:'UNTAMED® Cask Strength Rum',       type:'Cask Strength Rum',     cat:'rum',     abv:'60%',   size:'700mL', price:69.99, hide:true, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/UNTAMED-Cask-Strength-Rum_54d076d9-931a-486e-b4bd-1dd502e2899f.jpg?v=1705392598',  awards:'https://irishpremiumspirits.eu/cdn/shop/files/cask_rum_awards_2.png?v=1705654787' },
+  { id:47512980226390,  title:'UNTAMED® Cask Strength Whiskey',   type:'Cask Strength Whiskey', cat:'whiskey', abv:'60%',   size:'700mL', price:69.99, hide:true, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/UNTAMED-Cask-Strength-Whiskey_70c95f06-b448-4713-bb62-6f4eff116952.jpg?v=1744692267',awards:'https://irishpremiumspirits.eu/cdn/shop/files/cask_whiskey_awards_1.webp?v=1705654826' },
+  { id:50909853843798,  title:'Hadrians Wall Blended Scotch',     type:'Blended Scotch',         cat:'whiskey', abv:'40%',   size:'700mL', price:21.99, hide:true, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/files/hwfr.png?v=1753769239' },
+  { id:47512980619606,  title:'The Shooting Party',               type:'Irish Whiskey',          cat:'whiskey', abv:'40%',   size:'700mL', price:23.99, hide:true, img:'https://cdn.shopify.com/s/files/1/0795/7564/6550/products/shooting-party-irish-whiskey.jpg?v=1739336573' },
+];
+
+/* ── No gift on this offer (free shipping) ───────────────── */
+const GIFTS = [];
+
+/* ── Customer reviews (5★ — sourced from our store) ──────── */
+const REVIEWS = [
+  { name:'James M.',   text:'Smoothest I&rsquo;ve tasted in years. Ordered again the same week &mdash; once tried, never forgotten.' },
+  { name:'Sarah K.',   text:'Bought one as a gift, ended up ordering three more for myself. Genuinely premium.' },
+  { name:'David O.',   text:'Award-winning taste and the free gift was a lovely touch. I&rsquo;ll be a repeat customer for sure.' },
+  { name:'Aoife N.',   text:'The Single Malt is divine &mdash; smooth, warming and beautifully balanced. 5 stars isn&rsquo;t enough.' },
+  { name:'Michael B.', text:'Fast, tracked delivery and the whiskey is top class. My go-to from now on.' },
+  { name:'Claire D.',  text:'Tried it at a friend&rsquo;s and had to order my own. Won&rsquo;t drink anything else now.' },
+  { name:'Liam F.',    text:'Exceptional quality, and getting a second bottle free sealed it. Already reordered.' },
+  { name:'Emma T.',    text:'Beautifully packaged and tastes even better. A new household favourite.' },
+  { name:'Conor H.',   text:'Authentic Irish character in every sip. You can taste the awards. Highly recommend.' },
+  { name:'Rachel P.',  text:'Ordered for a birthday, now it&rsquo;s a regular order. Never disappoints.' },
+];
+
+function renderReviews() {
+  const tracks = document.querySelectorAll('.reviews-track');
+  if (!tracks.length) return;
+  const cardHtml = r => `
+    <div class="rev-card">
+      <span class="rev-stars">★★★★★</span>
+      <p class="rev-quote">&ldquo;${r.text}&rdquo;</p>
+      <span class="rev-name">${r.name} <span class="rev-verified">✓ Verified Buyer</span></span>
+    </div>`;
+  // Duplicate the set so the -50% keyframe loops seamlessly
+  const html = REVIEWS.map(cardHtml).join('') + REVIEWS.map(cardHtml).join('');
+  tracks.forEach(t => { t.innerHTML = html; });
+}
+
+/* ── State ───────────────────────────────────────────────── */
+let selBottle = null;
+let selGift   = null;
+
+/* ── Slide navigation ────────────────────────────────────── */
+const SLIDE_ORDER = ['slide-bottles', 'slide-gifts'];
+const SLIDE_DOTS  = [1, 2];
+let   slideIdx    = 0;
+
+function goToSlide(id, dotNum, skipHistory) {
+  const nextIdx = SLIDE_ORDER.indexOf(id);
+  if (nextIdx < 0 || nextIdx === slideIdx) return;
+  SLIDE_ORDER.forEach((sid, i) => {
+    const el = document.getElementById(sid);
+    if (i < nextIdx)       el.className = 'slide past';
+    else if (i === nextIdx) el.className = 'slide active';
+    else                    el.className = 'slide';
+  });
+  document.getElementById(id).scrollTop = 0;
+  slideIdx = nextIdx;
+  setDots(dotNum);
+  syncVpHeight();
+  document.getElementById('hdr-back').style.display = slideIdx > 0 ? 'flex' : 'none';
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (!skipHistory && nextIdx > 0) history.pushState({ slide: id }, '');
+}
+
+function goBack() {
+  if (slideIdx <= 0) return;
+  goToSlide(SLIDE_ORDER[slideIdx - 1], SLIDE_DOTS[slideIdx - 1]);
+}
+
+function syncVpHeight() {
+  const vp     = document.getElementById('slides-vp');
+  const active = document.querySelector('.slide.active') || document.getElementById('slide-bottles');
+  requestAnimationFrame(() => {
+    vp.style.minHeight = Math.max(active.scrollHeight, window.innerHeight - 60) + 'px';
+  });
+}
+
+function setDots(active) {
+  for (let i = 1; i <= 2; i++) {
+    const d = document.getElementById('d' + i);
+    if (d) d.className = 'sdot' + (i < active ? ' done' : i === active ? ' active' : '');
+  }
+}
+
+/* ── Bottles ─────────────────────────────────────────────── */
+function filterCat(btn, cat) {
+  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBottles(cat);
+}
+
+function renderBottles(cat = 'all') {
+  const g = document.getElementById('bottle-grid');
+  g.innerHTML = '';
+  const visible = BOTTLES.filter(b => !b.hide);
+  const pinned = visible.slice(0, 4);
+  const rest   = visible.slice(4).slice().sort((a, b) => a.price - b.price);
+  const ordered = [...pinned, ...rest];
+  ordered.forEach(b => {
+    const hide = b.outOfStock || (cat !== 'all' && b.cat !== cat);
+    const sel  = selBottle && selBottle.id === b.id;
+    const c = document.createElement('div');
+    c.className = `pcard${hide ? ' hidden' : ''}${sel ? ' selected' : ''}`;
+    c.onclick = () => pickBottle(b);
+    c.innerHTML = `
+      <div class="cimg">
+        <img src="${b.img}" alt="${b.title}" loading="lazy" data-pin-no-hover="true"/>
+        <div class="check-badge">✓</div>
+      </div>
+      <div class="cbody">
+        <div class="ctitle">${b.title}</div>
+        <div class="cmeta">${b.size} · ${b.abv}</div>
+        <button class="bottle-info-btn" onclick="event.stopPropagation();openProductInfo(${b.id})">Read product info</button>
+        ${b.awards ? `<div class="card-awards"><img src="${b.awards}" alt="Awards" loading="lazy" data-pin-no-hover="true"/></div>` : ''}
+        <div class="bottle-price-block">
+          <div class="bprice-row">
+            <span class="bprice-now">€${b.price.toFixed(2)}</span>
+          </div>
+          <div class="bfree-pill">🚚 + FREE SHIPPING</div>
+          <div class="bsave-line">Free delivery — save up to €22.99</div>
+        </div>
+      </div>`;
+    g.appendChild(c);
+  });
+  syncVpHeight();
+}
+
+function pickBottle(b) {
+  selBottle = b;
+  renderBottles();
+  // Single-stage offer — go straight to the claim modal (free shipping)
+  showClaimModal(b);
+}
+
+/* ── Product info modal ──────────────────────────────────── */
+async function openProductInfo(bottleId) {
+  const b = BOTTLES.find(x => x.id === bottleId);
+  if (!b) return;
+
+  document.getElementById('pi-title').textContent = b.title;
+  document.getElementById('pi-meta').textContent  = `${b.size} · ${b.abv} · ${b.type}`;
+  const img = document.getElementById('pi-img');
+  img.src = b.img; img.alt = b.title;
+  const awardsWrap = document.getElementById('pi-awards');
+  if (b.awards) { awardsWrap.innerHTML = `<img src="${b.awards}" alt="Awards" />`; awardsWrap.style.display = 'block'; }
+  else { awardsWrap.innerHTML = ''; awardsWrap.style.display = 'none'; }
+
+  const descEl = document.getElementById('pi-desc');
+  // Price block — full price (free 50cl is the perk, no % off the 70cl)
+  document.getElementById('pi-was').textContent = '';
+  document.getElementById('pi-now').textContent = `€${b.price.toFixed(2)}`;
+
+  // "Choose this bottle" → select it and go to the free gift step
+  document.getElementById('pi-choose-btn').onclick = function() {
+    closeProductInfo();
+    pickBottle(b);
+  };
+
+  // Show modal immediately, then load description if not cached
+  history.pushState({ pInfo: true }, '');
+  document.getElementById('pinfo-modal').classList.add('show');
+
+  if (b.desc) {
+    descEl.innerHTML = b.desc;
+  } else {
+    descEl.innerHTML = '<p style="opacity:.6">Loading details…</p>';
+    try {
+      const r = await fetch(`${CFG.store}/products.json?limit=250`, { signal: AbortSignal.timeout(6000) });
+      const data = await r.json();
+      data.products.forEach(p => p.variants.forEach(v => {
+        if (v.id === b.id) { b.handle = p.handle; b.desc = p.body_html || ''; }
+      }));
+      descEl.innerHTML = b.desc || '<p style="opacity:.6">No description available.</p>';
+    } catch(e) {
+      descEl.innerHTML = '<p style="opacity:.6">Could not load details right now.</p>';
+    }
+  }
+}
+
+function closeProductInfo() {
+  document.getElementById('pinfo-modal').classList.remove('show');
+}
+
+/* ── Gifts ───────────────────────────────────────────────── */
+function renderGifts() {
+  const g = document.getElementById('gift-grid');
+  g.innerHTML = '';
+  const sorted = [...GIFTS].sort((a, b) => (!!a.outOfStock) - (!!b.outOfStock));
+  sorted.forEach(item => {
+    const soldOut = !!item.outOfStock;
+    const sel = !soldOut && selGift && selGift.key === item.key;
+    const c   = document.createElement('div');
+    c.className = `pcard${sel ? ' selected' : ''}${soldOut ? ' sold-out' : ''}`;
+
+    const sv = item.variants[0];
+    const sizeHtml = soldOut
+      ? `<div class="size-wrap"><span class="size-lbl sold-out-lbl">Sold Out</span></div>`
+      : item.variants.length === 1
+        ? `<div class="size-wrap"><span class="size-lbl">Your free bottle</span><div class="size-one">${sv.size}</div></div>`
+        : `<div class="size-wrap">
+             <span class="size-lbl">Choose your size</span>
+             <div class="sz-pills" id="sz-${item.key}">
+               ${item.variants.map(v => `<button class="sz-pill${v.outOfStock ? ' sz-pill--out' : ''}" data-id="${v.id}" data-size="${v.size}" ${v.outOfStock ? 'disabled title="Sold out"' : `onclick="event.stopPropagation();onPillClick('${item.key}',${v.id},'${v.size}',this)"`}>${v.size}${v.outOfStock ? ' <span class="pill-out">✕</span>' : ''}</button>`).join('')}
+             </div>
+           </div>`;
+
+    c.innerHTML = `
+      <div class="cimg">
+        <div class="badge-free">${soldOut ? 'SOLD OUT' : 'FREE 50cl'}</div>
+        <img src="${item.img}" alt="${item.title}" loading="lazy" data-pin-no-hover="true"/>
+        ${soldOut ? '' : '<div class="check-badge">✓</div>'}
+      </div>
+      <div class="cbody">
+        <div class="ctitle">${item.title}</div>
+        <div class="cprice">${soldOut ? '<span class="sold-out-p">Sold Out</span>' : `<span class="free-p">FREE</span><span class="orig-p">€${item.price.toFixed(2)}</span>`}</div>
+        ${sizeHtml}
+      </div>`;
+
+    if (!soldOut) {
+      c.addEventListener('click', () => {
+        if (item.variants.length === 1) {
+          pickGift(item, item.variants[0].id, item.variants[0].size);
+        } else {
+          const pills = document.getElementById('sz-' + item.key);
+          const active = pills && pills.querySelector('.sz-pill.active');
+          if (active) {
+            pickGift(item, Number(active.dataset.id), active.dataset.size);
+          } else if (pills) {
+            pills.classList.remove('needs-size');
+            void pills.offsetWidth;
+            pills.classList.add('needs-size');
+            setTimeout(() => pills.classList.remove('needs-size'), 600);
+          }
+        }
+      });
+    }
+    g.appendChild(c);
+  });
+  syncVpHeight();
+}
+
+function onPillClick(key, variantId, size, btn) {
+  const pills = document.getElementById('sz-' + key);
+  if (pills) pills.querySelectorAll('.sz-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const item = GIFTS.find(g => g.key === key);
+  if (item) pickGift(item, variantId, size);
+}
+
+function pickGift(item, variantId, size) {
+  selGift = { key: item.key, variantId, size, item };
+  showClaimModal(selBottle, selGift);
+}
+
+/* ── Checkout ────────────────────────────────────────────── */
+const SHIP_ZONES = {
+  eu1:  { label:'Zone 1', rate:'€10.95' },
+  eu2:  { label:'Zone 2', rate:'€19.99' },
+  eu3:  { label:'Zone 3', rate:'€22.99' },
+  uk:   { label:'UK',     rate:'£20.95' },
+  world:{ label:'World',  rate:'€99.99' },
+};
+const EU1 = new Set(['BE','DE','LU','MC','DK','NL']);
+const EU2 = new Set(['AT','CZ','FI','FR','IE','IT','NO','PL','PT','ES','SE','CH','AX','AL','AD','BY','BA','HR','FO','GI','GG','HU','IS','IM','JE','XK','LI','MT','MD','ME','MK','RU','SM','RS','SK','SI','SJ','UA','VA']);
+const EU3 = new Set(['BG','EE','GR','LV','LT','RO']);
+
+let detectedZone = null;
+let currentItemsPrice = 0;
+
+const SHIP_RATE_VALUES = { eu1:10.95, eu2:19.99, eu3:22.99, uk:20.95, world:99.99 };
+
+function getShipRate() {
+  return detectedZone ? SHIP_RATE_VALUES[detectedZone] : null;
+}
+
+function updatePayTotal(itemsPrice) {
+  if (itemsPrice !== undefined) currentItemsPrice = itemsPrice;
+  const ship = getShipRate();
+  const payEl = document.getElementById('cm-pay');
+  if (payEl) payEl.textContent = ship !== null
+    ? (currentItemsPrice + ship).toFixed(2)
+    : currentItemsPrice.toFixed(2);
+}
+
+(async () => {
+  try {
+    const r = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
+    const d = await r.json();
+    const cc = (d.country_code || '').toUpperCase();
+    detectedZone = cc === 'GB' ? 'uk' : EU1.has(cc) ? 'eu1' : EU2.has(cc) ? 'eu2' : EU3.has(cc) ? 'eu3' : 'world';
+  } catch(e) { detectedZone = null; }
+  const el = document.getElementById('cm-ship-rate');
+  if (el) el.textContent = detectedZone ? SHIP_ZONES[detectedZone].rate : 'Calculated at checkout';
+  updatePayTotal();
+})();
+
+function applyDetectedZone() {
+  const el = document.getElementById('cm-ship-rate');
+  if (el) el.textContent = detectedZone ? SHIP_ZONES[detectedZone].rate : 'Calculated at checkout';
+  updatePayTotal();
+}
+
+function closeGateModal() {
+  document.getElementById('gate-modal').classList.remove('show');
+}
+
+// Unified back/forward handler for both modals and slide navigation
+window.addEventListener('popstate', function(e) {
+  const s = e.state;
+
+  // Forward into gate modal state — re-open it
+  if (s && s.gateOpen) {
+    document.getElementById('gate-modal').classList.add('show');
+    return;
+  }
+
+  // Product info modal is open — close it
+  if (document.getElementById('pinfo-modal').classList.contains('show')) {
+    closeProductInfo();
+    return;
+  }
+
+  // Gate modal is open — close it
+  if (document.getElementById('gate-modal').classList.contains('show')) {
+    closeGateModal();
+    return;
+  }
+
+  // Claim modal is open — just close it, keep the selection
+  if (document.getElementById('claim-modal').classList.contains('show')) {
+    document.getElementById('claim-modal').classList.remove('show');
+    return;
+  }
+
+  // Slide navigation fallback
+  if (slideIdx > 0) {
+    goToSlide('slide-bottles', 1, true);
+    selBottle = null;
+    selGift   = null;
+    renderBottles();
+  }
+});
+
+function claimOffer() {
+  if (!selBottle) return;
+  // No lead form on this offer — go straight to Shopify checkout
+  const btn = document.querySelector('.btn-claim');
+  if (btn) { btn.textContent = 'Taking you to checkout…'; btn.style.pointerEvents = 'none'; }
+  const p = new URLSearchParams({
+    'attributes[Source]': 'Free Shipping Offer',
+    'discount':           CFG.discountCode,
+  });
+  setTimeout(() => {
+    window.location.href = `${CFG.store}/cart/${selBottle.id}:1?${p}`;
+  }, 100);
+}
+
+// Shopify checkout[shipping_address][country] needs full English name, not ISO code
+const COUNTRY_NAMES = {
+  IE:'Ireland', GB:'United Kingdom', DE:'Germany', FR:'France',
+  BE:'Belgium', AT:'Austria', CH:'Switzerland', ES:'Spain',
+  IT:'Italy', PT:'Portugal', SE:'Sweden', NO:'Norway',
+  DK:'Denmark', FI:'Finland', PL:'Poland', CZ:'Czech Republic',
+  NL:'Netherlands', AU:'Australia', CA:'Canada', US:'United States',
+};
+
+function submitGate(e) {
+  e.preventDefault();
+  const name    = document.getElementById('gate-name').value.trim();
+  const email   = document.getElementById('gate-email').value.trim();
+  const yob     = parseInt(document.getElementById('gate-yob').value, 10);
+  const country = document.getElementById('gate-country').value;
+  let valid = true;
+
+  // Validate name
+  const errName = document.getElementById('gate-err-name');
+  if (!name || name.split(' ').filter(Boolean).length < 2) {
+    errName.classList.add('show'); valid = false;
+  } else { errName.classList.remove('show'); }
+
+  // Validate email
+  const errEmail = document.getElementById('gate-err-email');
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEmail.classList.add('show'); valid = false;
+  } else { errEmail.classList.remove('show'); }
+
+  // Validate age (18+)
+  const errYob = document.getElementById('gate-err-yob');
+  const age = new Date().getFullYear() - yob;
+  if (!yob || age < 18 || age > 120) {
+    errYob.classList.add('show'); valid = false;
+  } else { errYob.classList.remove('show'); }
+
+  // Validate country selected
+  const errCountry = document.getElementById('gate-err-country');
+  if (!country) {
+    errCountry.classList.add('show'); valid = false;
+  } else { errCountry.classList.remove('show'); }
+
+  if (!valid) return false;
+
+  // Block Netherlands
+  if (country === 'NL') {
+    document.getElementById('gate-form-state').style.display = 'none';
+    document.getElementById('gate-blocked').classList.add('show');
+    return false;
+  }
+
+  // All good — build cart URL with checkout prefill
+  const firstName = name.split(' ').slice(0, -1).join(' ');
+  const lastName  = name.split(' ').slice(-1)[0];
+  const p = new URLSearchParams({
+    'attributes[Source]':          'Free 50cl Bottle Offer',
+    'attributes[Customer Name]':   name,
+    'attributes[Customer Email]':  email,
+    'attributes[Year of Birth]':   String(yob),
+    'attributes[Country]':         country,
+    'discount':                    CFG.discountCode,   // applies the free-50cl code
+    'checkout[email]':             email,
+    'checkout[shipping_address][first_name]': firstName,
+    'checkout[shipping_address][last_name]':  lastName,
+    'checkout[shipping_address][country]':    COUNTRY_NAMES[country] || country,
+    'checkout[shipping_address][company]':    String(yob),
+  });
+  // Fire-and-forget to Zoho CRM — keepalive:true survives page navigation
+  fetch('/api/zoho-lead', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name, email, yob, country,
+      offer:  'Free 50cl Bottle Offer',
+      bottle: selBottle ? selBottle.title : '',
+      gift:   selGift   ? (selGift.item.title + (selGift.size ? ' (' + selGift.size + ')' : '')) : '',
+    }),
+    keepalive: true,  // request survives page unload — checkout is never delayed
+  }).catch(function() {}); // silently ignore — never block checkout
+
+  // Show loading state — keep modal open while browser navigates
+  document.getElementById('gate-form-state').style.display = 'none';
+  document.getElementById('gate-loading').classList.add('show');
+  setTimeout(() => {
+    window.location.href = `${CFG.store}/cart/${selBottle.id}:1,${selGift.variantId}:1?${p}`;
+  }, 120);
+  return false;
+}
+
+/* ── Personal offer timer (per-visitor, localStorage) ──── */
+const OFFER_SECS = 22 * 3600 + 35; // 22 hours + 35 seconds
+
+function getDeadlineTs() {
+  let ts = localStorage.getItem('ips_offer_ts');
+  if (!ts) {
+    ts = String(Date.now());
+    localStorage.setItem('ips_offer_ts', ts);
+  }
+  return parseInt(ts) + OFFER_SECS * 1000;
+}
+
+function secsLeft() {
+  return Math.max(0, Math.floor((getDeadlineTs() - Date.now()) / 1000));
+}
+
+function fmtTimer(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function tickTimer() {
+  const s = secsLeft();
+  const fmt = fmtTimer(s);
+  const hdrT = document.getElementById('hdr-timer');
+  if (hdrT) hdrT.textContent = fmt;
+  if (s === 0) {
+    const ub = document.getElementById('urgency-bar');
+    if (ub) ub.classList.add('hidden');
+  }
+}
+
+/* ── Live viewers — time-seeded, stable across refreshes ─── */
+function initViewers() {
+  // Re-use count stored in sessionStorage so refresh doesn't jump
+  const stored = sessionStorage.getItem('ips_viewers');
+  if (stored) return parseInt(stored);
+  // Seed from current 8-minute time slot so nearby visitors see similar counts
+  const slot = Math.floor(Date.now() / (8 * 60 * 1000));
+  const base  = 14 + ((slot * 13 + 29) % 13); // 14–26, cycles slowly
+  sessionStorage.setItem('ips_viewers', String(base));
+  return base;
+}
+let liveCount = initViewers();
+
+function nudgeViewers() {
+  const delta = Math.random() < 0.45 ? 1 : Math.random() < 0.45 ? -1 : 0;
+  liveCount = Math.max(11, Math.min(27, liveCount + delta));
+  sessionStorage.setItem('ips_viewers', String(liveCount));
+  const el = document.getElementById('live-count');
+  if (el) el.textContent = liveCount;
+}
+
+/* ── Confetti ────────────────────────────────────────────── */
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
+  const COLS = ['#C9A83E','#F8E47D','#8D672D','#ffffff','#4ade80','#86efac','#fbbf24'];
+  const pieces = Array.from({length: 140}, () => ({
+    x:   Math.random() * canvas.width,
+    y:   -10 - Math.random() * 140,
+    w:   6 + Math.random() * 10,
+    h:   3 + Math.random() * 6,
+    col: COLS[Math.floor(Math.random() * COLS.length)],
+    rot: Math.random() * Math.PI * 2,
+    vx:  (Math.random() - .5) * 7,
+    vy:  1.5 + Math.random() * 4,
+    vr:  (Math.random() - .5) * .16,
+    al:  1,
+  }));
+  (function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let live = false;
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += .06; p.rot += p.vr;
+      if (p.y > canvas.height * 1.05) p.al -= .05;
+      p.al = Math.max(0, p.al);
+      if (p.al <= 0) return;
+      live = true;
+      ctx.save();
+      ctx.globalAlpha = p.al;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.col;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    if (live) requestAnimationFrame(draw);
+    else canvas.style.display = 'none';
+  })();
+}
+
+/* ── Claim modal ─────────────────────────────────────────── */
+function showClaimModal(bottle) {
+  // Free-shipping offer — the "saving" is the shipping cost they'd otherwise pay
+  // (capped at €22.99 so the headline stays believable; "world" zone is higher)
+  const shipSave = Math.min(getShipRate() || 22.99, 22.99);
+  const fullRrp  = bottle.price + shipSave;
+
+  document.getElementById('cm-save-amt').textContent    = '€' + shipSave.toFixed(2);
+  const itemsEl = document.getElementById('cm-items-total');
+  if (itemsEl) itemsEl.textContent = '€' + bottle.price.toFixed(2);
+  document.getElementById('cm-bottle-name').textContent = bottle.title;
+  document.getElementById('cm-rrp').textContent         = fullRrp.toFixed(2);
+  document.getElementById('cm-saving-lbl').textContent  = 'FREE';
+  const bImg = document.getElementById('cm-bottle-img');
+  if (bImg) { bImg.src = bottle.img; bImg.alt = bottle.title; }
+
+  history.pushState({ modal: true }, '');
+  document.getElementById('claim-modal').classList.add('show');
+  launchConfetti();
+}
+
+function closeClaimModal() {
+  document.getElementById('claim-modal').classList.remove('show');
+}
+
+function changeSelection() {
+  selBottle = null;
+  selGift   = null;
+  document.getElementById('claim-modal').classList.remove('show');
+  goToSlide('slide-bottles', 1, true);
+  renderBottles();
+}
+
+/* ── Browser back button handled in unified popstate listener above ── */
+
+/* ── Stock check (Shopify public products API) ───────────── */
+(async () => {
+  try {
+    const res  = await fetch('https://irishpremiumspirits.eu/products.json?limit=250', {
+      signal: AbortSignal.timeout(6000)
+    });
+    const data = await res.json();
+    // Build variantId → available map + variantId → product info (handle/desc)
+    const avail = {};
+    const infoByVariant = {};
+    data.products.forEach(p => p.variants.forEach(v => {
+      avail[v.id] = v.available;
+      infoByVariant[v.id] = { handle: p.handle, desc: p.body_html || '' };
+    }));
+
+    let bottleChanged = false;
+    let giftChanged   = false;
+
+    // Mark out-of-stock bottles + attach product info
+    BOTTLES.forEach(b => {
+      const nowOut = avail[b.id] === false;
+      if (!!b.outOfStock !== nowOut) { b.outOfStock = nowOut; bottleChanged = true; }
+      const info = infoByVariant[b.id];
+      if (info) { b.handle = info.handle; b.desc = info.desc; }
+    });
+
+    // Mark out-of-stock gift variants — whole gift is out if ALL variants gone
+    GIFTS.forEach(g => {
+      g.variants.forEach(v => {
+        const nowOut = avail[v.id] === false;
+        if (!!v.outOfStock !== nowOut) { v.outOfStock = nowOut; giftChanged = true; }
+      });
+      const allOut = g.variants.every(v => v.outOfStock);
+      if (!!g.outOfStock !== allOut) { g.outOfStock = allOut; giftChanged = true; }
+    });
+
+    if (bottleChanged) renderBottles();
+    if (giftChanged)   renderGifts();
+  } catch(e) { /* silent fail — show all items */ }
+})();
+
+/* ── Init ────────────────────────────────────────────────── */
+document.getElementById(SLIDE_ORDER[0]).className = 'slide active';
+renderBottles();
+renderGifts();
+renderReviews();
+syncVpHeight();
+history.replaceState({ slide: 'slide-bottles' }, '');
+
+getDeadlineTs(); // seed localStorage timestamp on first visit
+tickTimer();
+// Sync initial viewer count into DOM
+(function(){ const el = document.getElementById('live-count'); if (el) el.textContent = liveCount; })();
+setInterval(tickTimer, 1000);
+
+// Stagger viewer nudges every 28–52 s
+(function scheduleNudge() {
+  setTimeout(() => { nudgeViewers(); scheduleNudge(); }, 28000 + Math.random() * 24000);
+})();
+</script>
+<!-- Google Analytics / Ads — matches irishpremiumspirits.eu -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ER4W89ZSBN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-ER4W89ZSBN');
+  gtag('config', 'AW-10990381514');
+  gtag('config', 'GT-WF8G3SW3');
+</script>
+<!-- Zoho SalesIQ -->
+<script>window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){}}</script>
+<script id="zsiqscript" src="https://salesiq.zohopublic.eu/widget?wc=siq88b4a9a4398a7d0608f72ac1793b14cd7a402afef6ee9cd020738e07830bec11" defer></script>
+</body>
+</html>
