@@ -168,17 +168,24 @@ either option if it sells out.
 
 A third offer page lives at **`offers.irishpremiumspirits.eu/offer3`** (folder `offer3/index.html`).
 
-**Mechanic:** Buy **3 of the SAME bottle** → FREE shipping. Single stage — pick a bottle
-(adds qty 3 to cart) → see the saving → straight to checkout. No second step, no lead form.
+**Mechanic:** Buy **3 of the SAME bottle** → **10% off + FREE shipping**. Single stage — pick a
+bottle (adds qty 3 to cart) → see the saving → straight to checkout. No lead form.
 
-**⚠️ REQUIRED — create the Shopify free-shipping code `FREESHIP`:**
-1. Shopify Admin → Discounts → Create discount → **Free shipping**
-2. Method: **Discount code**, Code: `FREESHIP`
-3. Countries: select the regions you ship to (or All)
-4. **Minimum quantity of items: 3** (or a min spend) — so the code only works on the 3-pack
-5. Limit: **one use per customer**
+**⚠️ REQUIRED — create TWO combinable Shopify codes:**
 
-The page adds 3 of the chosen bottle and applies `?discount=FREESHIP` automatically.
-Shows all in-stock 70cl bottles. The displayed shipping saving is capped at €22.99.
-To change the quantity, edit `CFG.qty` near the top of `offer3/index.html`. If you use a
-different code name, change `CFG.discountCode`.
+`SAVE10` — 10% off the bottles:
+1. Discounts → Create → **Amount off products** → Code `SAVE10`
+2. Value: **10% off**, applies to All products (or the 70cl spirits)
+3. Minimum quantity: **3 items**
+4. Under **Combinations**, tick **"Shipping discounts"** so it stacks with free shipping
+
+`FREESHIP` — free shipping:
+1. Discounts → Create → **Free shipping** → Code `FREESHIP`
+2. Minimum quantity: **3 items**; countries: the regions you ship to
+3. Under **Combinations**, tick **"Product discounts"** so it stacks with SAVE10
+
+The page adds 3 of the chosen bottle and applies `?discount=SAVE10,FREESHIP` (both codes).
+**Both discounts must be set to combine with each other** or only one will apply.
+Shows all in-stock 70cl bottles. Shipping saving shown is capped at €22.99.
+Edit `CFG.qty` / `CFG.discountPct` / `CFG.discountCode` near the top of `offer3/index.html`
+to change quantity, % off, or the code names.

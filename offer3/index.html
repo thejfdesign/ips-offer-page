@@ -1334,20 +1334,20 @@
     <div class="inner step-wrap">
       <div class="sec-hdr">
         <div class="sec-badge">☀️ Summer Special</div>
-        <h2 class="sec-title">Buy 3, Get<br><span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span> Shipping</h2>
-        <p class="hero-pitch">Stock up on your favourite — buy <strong>3 of the same bottle</strong> and we&rsquo;ll ship the lot <strong>free</strong>. Save up to €22.99. While summer stock lasts. ☘️</p>
+        <h2 class="sec-title">Buy 3: 10% Off<br>&amp; <span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span> Shipping</h2>
+        <p class="hero-pitch">Stock up on your favourite — buy <strong>3 of the same bottle</strong> and save <strong>10%</strong> PLUS free shipping. While summer stock lasts. ☘️</p>
         <div class="hero-perks">
           <div class="hero-perk">
-            <span class="hp-icon">🍾</span>
-            <div class="hp-text"><strong>Buy any 3</strong><span>Same bottle ×3</span></div>
+            <span class="hp-icon">🏷️</span>
+            <div class="hp-text"><strong>10% OFF</strong><span>On your 3-pack</span></div>
           </div>
           <div class="hero-perk">
             <span class="hp-icon">🚚</span>
             <div class="hp-text"><strong>FREE shipping</strong><span>Save up to €22.99</span></div>
           </div>
           <div class="hero-perk">
-            <span class="hp-icon">🏆</span>
-            <div class="hp-text"><strong>Award-winning</strong><span>Premium Irish spirits</span></div>
+            <span class="hp-icon">🍾</span>
+            <div class="hp-text"><strong>Buy any 3</strong><span>Same bottle ×3</span></div>
           </div>
         </div>
       </div>
@@ -1492,7 +1492,7 @@
     <span class="claim-emoji">🎉</span>
     <div class="claim-eyebrow">Your Exclusive Offer Is Ready</div>
     <h2 class="claim-headline">You're saving <span class="cm-save-amt" id="cm-save-amt">€0.00</span> today!</h2>
-    <p class="claim-sub">Your 3-pack is locked in — complete your order to claim your FREE shipping.</p>
+    <p class="claim-sub">Your 3-pack is locked in — complete your order to claim 10% off + FREE shipping.</p>
     <div class="sel-summary">
       <div class="sel-pill">
         <img class="sel-pill-img" id="cm-bottle-img" src="" alt="" />
@@ -1500,7 +1500,7 @@
       </div>
       <div class="sel-pill">
         <span class="sel-pill-emoji">🚚</span>
-        <div class="sel-pill-txt"><strong>Delivery</strong><span class="ship-free">FREE Shipping</span></div>
+        <div class="sel-pill-txt"><strong>Bonus</strong><span class="ship-free">10% off + FREE Shipping</span></div>
       </div>
     </div>
     <div class="savings-bd">
@@ -1509,10 +1509,10 @@
         <span class="sb-rrp-amt">€<span id="cm-rrp">0.00</span></span>
       </div>
       <div class="sb-saving-row">
-        <span>Your shipping</span>
-        <span id="cm-saving-lbl" style="font-size:18px;font-weight:800;letter-spacing:-.01em;">FREE</span>
+        <span>You save</span>
+        <span id="cm-saving-lbl" style="font-size:20px;font-weight:800;letter-spacing:-.01em;">−€0.00</span>
       </div>
-      <div class="ship-line"><span>You pay (3 bottles)</span><span id="cm-items-total">—</span></div>
+      <div class="ship-line"><span>You pay today</span><span id="cm-items-total">—</span></div>
     </div>
     <div class="cm-social">
       <div class="cm-social-stars">★★★★★</div>
@@ -1536,14 +1536,14 @@
         <div class="pinfo-price">
           <span class="pinfo-was" id="pi-was"></span>
           <span class="pinfo-now" id="pi-now">—</span>
-          <span class="pinfo-pct">Buy 3 · FREE shipping</span>
+          <span class="pinfo-pct">Buy 3 · 10% off + free shipping</span>
         </div>
         <div class="pinfo-stars">★★★★★ <span>4.8 · verified reviews</span></div>
       </div>
     </div>
     <div class="pinfo-awards" id="pi-awards"></div>
     <div class="pinfo-desc" id="pi-desc"></div>
-    <button class="pinfo-choose-btn" id="pi-choose-btn">Buy 3 — FREE shipping &rarr;</button>
+    <button class="pinfo-choose-btn" id="pi-choose-btn">Buy 3 — 10% off + free shipping &rarr;</button>
   </div>
 </div>
 
@@ -1554,9 +1554,10 @@
 /* ── Config ──────────────────────────────────────────────── */
 const CFG = {
   store:        'https://irishpremiumspirits.eu',
-  discountCode: 'FREESHIP',  // ← Shopify free-shipping code
-  discountPct:  0,           // no % off the bottle on this offer
-  qty:          3,           // buy 3 of the same bottle to unlock free shipping
+  // Two combinable Shopify codes: 10% off + free shipping (comma-separated)
+  discountCode: 'SAVE10,FREESHIP',
+  discountPct:  10,          // 10% off the bottles
+  qty:          3,           // buy 3 of the same bottle to unlock the offer
 };
 
 /* ── Product data — 70cl bottles to purchase ─────────────── */
@@ -1684,11 +1685,12 @@ function renderBottles(cat = 'all') {
         ${b.awards ? `<div class="card-awards"><img src="${b.awards}" alt="Awards" loading="lazy" data-pin-no-hover="true"/></div>` : ''}
         <div class="bottle-price-block">
           <div class="bprice-row">
-            <span class="bprice-now">€${(b.price * CFG.qty).toFixed(2)}</span>
-            <span class="bprice-each">for ${CFG.qty} · €${b.price.toFixed(2)} ea</span>
+            <span class="bprice-was">€${(b.price * CFG.qty).toFixed(2)}</span>
+            <span class="bprice-now">€${(b.price * CFG.qty * (1 - CFG.discountPct/100)).toFixed(2)}</span>
+            <span class="bprice-pct">-${CFG.discountPct}%</span>
           </div>
-          <div class="bfree-pill">🚚 BUY ${CFG.qty} · FREE SHIPPING</div>
-          <div class="bsave-line">3 of this bottle — delivered free</div>
+          <div class="bfree-pill">🏷️ ${CFG.discountPct}% OFF + FREE SHIPPING</div>
+          <div class="bsave-line">Buy ${CFG.qty} of this bottle — save 10% &amp; ship free</div>
         </div>
       </div>`;
     g.appendChild(c);
@@ -2115,19 +2117,22 @@ function launchConfetti() {
 
 /* ── Claim modal ─────────────────────────────────────────── */
 function showClaimModal(bottle) {
-  // Buy-3 free-shipping offer — saving is the shipping cost on the 3-pack
-  // (capped at €22.99 so the headline stays believable; "world" zone is higher)
-  const qty       = CFG.qty;
-  const itemsTotal = bottle.price * qty;
+  // Buy-3 offer — 10% off the bottles + free shipping
+  // (ship saving capped at €22.99 so the headline stays believable)
+  const qty        = CFG.qty;
+  const itemsFull  = bottle.price * qty;
+  const bottleSave = itemsFull * (CFG.discountPct / 100);
+  const itemsPay   = itemsFull - bottleSave;
   const shipSave   = Math.min(getShipRate() || 22.99, 22.99);
-  const fullRrp    = itemsTotal + shipSave;
+  const totalSave  = bottleSave + shipSave;
+  const fullRrp    = itemsFull + shipSave;
 
-  document.getElementById('cm-save-amt').textContent    = '€' + shipSave.toFixed(2);
+  document.getElementById('cm-save-amt').textContent    = '€' + totalSave.toFixed(2);
   const itemsEl = document.getElementById('cm-items-total');
-  if (itemsEl) itemsEl.textContent = '€' + itemsTotal.toFixed(2);
+  if (itemsEl) itemsEl.textContent = '€' + itemsPay.toFixed(2);
   document.getElementById('cm-bottle-name').textContent = qty + ' × ' + bottle.title;
   document.getElementById('cm-rrp').textContent         = fullRrp.toFixed(2);
-  document.getElementById('cm-saving-lbl').textContent  = 'FREE';
+  document.getElementById('cm-saving-lbl').textContent  = '−€' + totalSave.toFixed(2);
   const bImg = document.getElementById('cm-bottle-img');
   if (bImg) { bImg.src = bottle.img; bImg.alt = bottle.title; }
 
