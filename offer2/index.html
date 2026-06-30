@@ -1306,7 +1306,7 @@
   <span class="ub-sep">·</span>
   <span class="ub-clock">
     <span class="ub-clock-icon">⏰</span>
-    Your offer expires in <span class="ub-timer" id="hdr-timer">22:00:35</span>
+    Summer Special ends in <span class="ub-timer" id="hdr-timer">2d 00:00:00</span>
   </span>
 </div>
 
@@ -1319,7 +1319,7 @@
   <div class="slide" id="slide-bottles">
     <div class="inner step-wrap">
       <div class="sec-hdr">
-        <div class="sec-badge">☀️ Summer Special</div>
+        <div class="sec-badge">☀️ Summer Special · Limited Time</div>
         <h2 class="sec-title">Buy 1 Bottle,<br>Get Your 2nd <span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span></h2>
         <p class="hero-pitch">Two award-winning spirits, up to <strong>€30 free</strong>. While summer stock lasts. ☘️</p>
         <div class="hero-perks">
@@ -2001,38 +2001,31 @@ function submitGate(e) {
   return false;
 }
 
-/* ── Personal offer timer (per-visitor, localStorage) ──── */
-const OFFER_SECS = 22 * 3600 + 35; // 22 hours + 35 seconds
-
-function getDeadlineTs() {
-  let ts = localStorage.getItem('ips_offer_ts');
-  if (!ts) {
-    ts = String(Date.now());
-    localStorage.setItem('ips_offer_ts', ts);
-  }
-  return parseInt(ts) + OFFER_SECS * 1000;
-}
+/* ── Rolling 3-day Summer Special timer ──────────────────────
+   Deterministic & global: counts down 3 days, then auto-restarts.
+   Same for every visitor, never expires — keep ads running. ──── */
+const PERIOD_SECS = 3 * 24 * 3600;                       // 3 days
+const ANCHOR_SECS = Math.floor(Date.UTC(2026, 0, 1) / 1000); // fixed start anchor
 
 function secsLeft() {
-  return Math.max(0, Math.floor((getDeadlineTs() - Date.now()) / 1000));
+  const now = Math.floor(Date.now() / 1000);
+  const elapsed = (((now - ANCHOR_SECS) % PERIOD_SECS) + PERIOD_SECS) % PERIOD_SECS;
+  return PERIOD_SECS - elapsed;
 }
 
 function fmtTimer(s) {
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
+  const d   = Math.floor(s / 86400);
+  const h   = Math.floor((s % 86400) / 3600);
+  const m   = Math.floor((s % 3600) / 60);
   const sec = s % 60;
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  const hms = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return d > 0 ? `${d}d ${hms}` : hms;
 }
 
 function tickTimer() {
-  const s = secsLeft();
-  const fmt = fmtTimer(s);
   const hdrT = document.getElementById('hdr-timer');
-  if (hdrT) hdrT.textContent = fmt;
-  if (s === 0) {
-    const ub = document.getElementById('urgency-bar');
-    if (ub) ub.classList.add('hidden');
-  }
+  if (hdrT) hdrT.textContent = fmtTimer(secsLeft());
+  // Rolling timer never hits a hard zero — no need to hide the bar.
 }
 
 /* ── Live viewers — time-seeded, stable across refreshes ─── */
@@ -2191,7 +2184,6 @@ renderReviews();
 syncVpHeight();
 history.replaceState({ slide: 'slide-bottles' }, '');
 
-getDeadlineTs(); // seed localStorage timestamp on first visit
 tickTimer();
 // Sync initial viewer count into DOM
 (function(){ const el = document.getElementById('live-count'); if (el) el.textContent = liveCount; })();
