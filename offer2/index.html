@@ -131,10 +131,31 @@
       line-height: 1.12; margin-bottom: 16px; color: var(--ink);
     }
     .title-free {
-      position: relative; white-space: nowrap;
+      position: relative; display: inline-block; white-space: nowrap;
+      padding-bottom: .12em;
       background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 55%, var(--gold-dk) 100%);
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+    /* Hand-drawn brush underline that draws itself in, holds, then wipes */
+    .free-underline {
+      position: absolute; left: -3%; bottom: -.12em;
+      width: 106%; height: .42em; overflow: visible; pointer-events: none;
+    }
+    .free-underline path {
+      fill: none; stroke: var(--gold); stroke-width: 7; stroke-linecap: round;
+      stroke-dasharray: 230; stroke-dashoffset: 230;
+      filter: drop-shadow(0 1px 1px rgba(141,103,45,.25));
+      animation: draw-underline 3.4s ease-in-out infinite;
+    }
+    @keyframes draw-underline {
+      0%   { stroke-dashoffset: 230; }
+      38%  { stroke-dashoffset: 0; }
+      72%  { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -230; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .free-underline path { animation: none; stroke-dashoffset: 0; }
     }
     .hero-pitch {
       max-width: 480px; margin: 0 auto 20px; font-size: clamp(14px,3.6vw,17px);
@@ -1288,7 +1309,7 @@
     <div class="inner step-wrap">
       <div class="sec-hdr">
         <div class="sec-badge">☀️ Summer Special — Members Only</div>
-        <h2 class="sec-title">Buy 1 Bottle,<br>Get Your 2nd <span class="title-free">FREE</span></h2>
+        <h2 class="sec-title">Buy 1 Bottle,<br>Get Your 2nd <span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span></h2>
         <p class="hero-pitch">Pick any premium <strong>70cl</strong> Irish bottle and we&rsquo;ll add a <strong>FREE 50cl bottle</strong> to your order — two award-winning spirits, up to <strong>€30 free</strong>. While summer stock lasts. ☘️</p>
         <div class="hero-perks">
           <div class="hero-perk">
@@ -1328,7 +1349,7 @@
     <div class="inner step-wrap">
       <div class="sec-hdr">
         <div class="sec-badge">Step 2 of 2 — Your FREE 50cl</div>
-        <h2 class="sec-title">Choose Your FREE 50cl Bottle</h2>
+        <h2 class="sec-title">Choose Your <span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span> Bottle</h2>
         <p class="sec-sub" style="margin:0 auto;color:#111;font-size:15px;font-weight:600;">Pick <span style="background:var(--gold);color:#000;font-weight:800;padding:1px 7px;border-radius:5px;">1 bottle</span> below — added free to your order</p>
       </div>
       <div class="pgrid" id="gift-grid"></div>
