@@ -442,6 +442,17 @@
     }
     @media(max-width:600px){ .pgrid { grid-template-columns: repeat(2,1fr); gap:10px; } }
 
+    /* Bottle grid — 4 cards, centred (no empty auto-fill columns) */
+    #bottle-grid {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 16px; max-width: 920px; margin: 0 auto;
+    }
+    #bottle-grid .pcard { flex: 0 0 210px; max-width: 100%; }
+    @media(max-width:600px){
+      #bottle-grid { gap: 10px; }
+      #bottle-grid .pcard { flex: 1 1 44%; max-width: 48%; }
+    }
+
     /* Free 50cl gift grid — only 2 cards, centred & larger */
     #gift-grid {
       display: flex; flex-wrap: wrap; justify-content: center;
@@ -1310,7 +1321,7 @@
       <div class="sec-hdr">
         <div class="sec-badge">☀️ Summer Special — Members Only</div>
         <h2 class="sec-title">Buy 1 Bottle,<br>Get Your 2nd <span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span></h2>
-        <p class="hero-pitch">Pick any premium <strong>70cl</strong> Irish bottle and we&rsquo;ll add a <strong>FREE 50cl bottle</strong> to your order — two award-winning spirits, up to <strong>€30 free</strong>. While summer stock lasts. ☘️</p>
+        <p class="hero-pitch">Two award-winning spirits, up to <strong>€30 free</strong>. While summer stock lasts. ☘️</p>
         <div class="hero-perks">
           <div class="hero-perk">
             <span class="hp-icon">🎁</span>
