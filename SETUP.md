@@ -137,3 +137,27 @@ cd "/Users/jfdesign/ELEMENTOR TEMPLATES/Irish Premium Spirits"
 python3 -m http.server 5057
 # open http://localhost:5057
 ```
+
+---
+
+## ⑦ Offer 2 — Free 50cl Bottle (`/offer2`)
+
+A second offer page lives at **`offers.irishpremiumspirits.eu/offer2`** (folder `offer2/index.html`).
+
+**Mechanic:** Buy any 70cl bottle at full price → choose a FREE 50cl bottle (Honey or Classic).
+
+**⚠️ REQUIRED — create the Shopify discount code `FREE50`:**
+1. Shopify Admin → Discounts → Create discount → **Amount off products**
+2. Method: **Discount code**, Code: `FREE50`
+3. Value: **100% off**
+4. Applies to: **Specific products** → the two 50cl bottles:
+   - The Wild Geese® Irish Honey Liqueur — **500mL** variant
+   - The Wild Geese® Irish Whiskey Classic Blend — **500mL** variant
+5. Minimum requirement: **2 items** (or min €21.99) so it can't be used without a 70cl bottle
+6. Limit: **one use per customer**, **one use total per order**
+
+The page applies `?discount=FREE50` automatically at checkout. If you use a different
+code name, change `CFG.discountCode` near the top of `offer2/index.html`.
+
+**Note:** the 50cl Honey/Classic stock is low (≈5 and ≈4 units) — the page auto-hides
+either option if it sells out.
