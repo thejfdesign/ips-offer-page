@@ -596,9 +596,17 @@
       margin-top: 10px; padding-top: 9px;
       border-top: 1px solid rgba(26,22,16,.08);
     }
-    .bprice-row { display: flex; align-items: baseline; gap: 6px; }
+    .bprice-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
     .bprice-was { font-size: 12px; color: var(--ink-faint); text-decoration: line-through; font-weight: 400; }
     .bprice-now { font-size: 18px; font-weight: 800; color: var(--ink); }
+    .bprice-each { font-size: 11px; color: var(--ink-faint); font-weight: 600; }
+    /* ×3 quantity badge on bottle image */
+    .qty-badge {
+      position: absolute; top: 8px; left: 8px; z-index: 2;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold) 60%, var(--gold-dk));
+      color: var(--ink-2); font-size: 12px; font-weight: 900; letter-spacing: .02em;
+      border-radius: 7px; padding: 3px 8px; box-shadow: 0 2px 8px rgba(201,168,62,.45);
+    }
     .bprice-pct { font-size: 11px; font-weight: 700; color: var(--green); background: rgba(46,158,92,.1); border-radius: 5px; padding: 1px 5px; }
     .bfree-pill {
       position: relative; overflow: hidden;
@@ -1326,9 +1334,13 @@
     <div class="inner step-wrap">
       <div class="sec-hdr">
         <div class="sec-badge">☀️ Summer Special</div>
-        <h2 class="sec-title">Any Bottle,<br><span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span> Shipping</h2>
-        <p class="hero-pitch">Pick your bottle, we ship it <strong>free</strong> — save up to <strong>€22.99</strong> on delivery. While summer stock lasts. ☘️</p>
+        <h2 class="sec-title">Buy 3, Get<br><span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span> Shipping</h2>
+        <p class="hero-pitch">Stock up on your favourite — buy <strong>3 of the same bottle</strong> and we&rsquo;ll ship the lot <strong>free</strong>. Save up to €22.99. While summer stock lasts. ☘️</p>
         <div class="hero-perks">
+          <div class="hero-perk">
+            <span class="hp-icon">🍾</span>
+            <div class="hp-text"><strong>Buy any 3</strong><span>Same bottle ×3</span></div>
+          </div>
           <div class="hero-perk">
             <span class="hp-icon">🚚</span>
             <div class="hp-text"><strong>FREE shipping</strong><span>Save up to €22.99</span></div>
@@ -1336,10 +1348,6 @@
           <div class="hero-perk">
             <span class="hp-icon">🏆</span>
             <div class="hp-text"><strong>Award-winning</strong><span>Premium Irish spirits</span></div>
-          </div>
-          <div class="hero-perk">
-            <span class="hp-icon">📦</span>
-            <div class="hp-text"><strong>Tracked & secure</strong><span>Fast dispatch</span></div>
           </div>
         </div>
       </div>
@@ -1484,11 +1492,11 @@
     <span class="claim-emoji">🎉</span>
     <div class="claim-eyebrow">Your Exclusive Offer Is Ready</div>
     <h2 class="claim-headline">You're saving <span class="cm-save-amt" id="cm-save-amt">€0.00</span> today!</h2>
-    <p class="claim-sub">Your bottle is locked in — complete your order to claim your FREE shipping.</p>
+    <p class="claim-sub">Your 3-pack is locked in — complete your order to claim your FREE shipping.</p>
     <div class="sel-summary">
       <div class="sel-pill">
         <img class="sel-pill-img" id="cm-bottle-img" src="" alt="" />
-        <div class="sel-pill-txt"><strong>Your Bottle</strong><span id="cm-bottle-name">—</span></div>
+        <div class="sel-pill-txt"><strong>Your 3-Pack</strong><span id="cm-bottle-name">—</span></div>
       </div>
       <div class="sel-pill">
         <span class="sel-pill-emoji">🚚</span>
@@ -1497,14 +1505,14 @@
     </div>
     <div class="savings-bd">
       <div class="sb-rrp-row">
-        <span>Bottle + standard shipping</span>
+        <span>3 bottles + standard shipping</span>
         <span class="sb-rrp-amt">€<span id="cm-rrp">0.00</span></span>
       </div>
       <div class="sb-saving-row">
         <span>Your shipping</span>
         <span id="cm-saving-lbl" style="font-size:18px;font-weight:800;letter-spacing:-.01em;">FREE</span>
       </div>
-      <div class="ship-line"><span>You pay (bottle only)</span><span id="cm-items-total">—</span></div>
+      <div class="ship-line"><span>You pay (3 bottles)</span><span id="cm-items-total">—</span></div>
     </div>
     <div class="cm-social">
       <div class="cm-social-stars">★★★★★</div>
@@ -1528,14 +1536,14 @@
         <div class="pinfo-price">
           <span class="pinfo-was" id="pi-was"></span>
           <span class="pinfo-now" id="pi-now">—</span>
-          <span class="pinfo-pct">+ FREE shipping</span>
+          <span class="pinfo-pct">Buy 3 · FREE shipping</span>
         </div>
         <div class="pinfo-stars">★★★★★ <span>4.8 · verified reviews</span></div>
       </div>
     </div>
     <div class="pinfo-awards" id="pi-awards"></div>
     <div class="pinfo-desc" id="pi-desc"></div>
-    <button class="pinfo-choose-btn" id="pi-choose-btn">Choose this bottle &rarr;</button>
+    <button class="pinfo-choose-btn" id="pi-choose-btn">Buy 3 — FREE shipping &rarr;</button>
   </div>
 </div>
 
@@ -1548,6 +1556,7 @@ const CFG = {
   store:        'https://irishpremiumspirits.eu',
   discountCode: 'FREESHIP',  // ← Shopify free-shipping code
   discountPct:  0,           // no % off the bottle on this offer
+  qty:          3,           // buy 3 of the same bottle to unlock free shipping
 };
 
 /* ── Product data — 70cl bottles to purchase ─────────────── */
@@ -1664,6 +1673,7 @@ function renderBottles(cat = 'all') {
     c.onclick = () => pickBottle(b);
     c.innerHTML = `
       <div class="cimg">
+        <div class="qty-badge">×${CFG.qty}</div>
         <img src="${b.img}" alt="${b.title}" loading="lazy" data-pin-no-hover="true"/>
         <div class="check-badge">✓</div>
       </div>
@@ -1674,10 +1684,11 @@ function renderBottles(cat = 'all') {
         ${b.awards ? `<div class="card-awards"><img src="${b.awards}" alt="Awards" loading="lazy" data-pin-no-hover="true"/></div>` : ''}
         <div class="bottle-price-block">
           <div class="bprice-row">
-            <span class="bprice-now">€${b.price.toFixed(2)}</span>
+            <span class="bprice-now">€${(b.price * CFG.qty).toFixed(2)}</span>
+            <span class="bprice-each">for ${CFG.qty} · €${b.price.toFixed(2)} ea</span>
           </div>
-          <div class="bfree-pill">🚚 + FREE SHIPPING</div>
-          <div class="bsave-line">Free delivery — save up to €22.99</div>
+          <div class="bfree-pill">🚚 BUY ${CFG.qty} · FREE SHIPPING</div>
+          <div class="bsave-line">3 of this bottle — delivered free</div>
         </div>
       </div>`;
     g.appendChild(c);
@@ -1911,7 +1922,7 @@ function claimOffer() {
     'discount':           CFG.discountCode,
   });
   setTimeout(() => {
-    window.location.href = `${CFG.store}/cart/${selBottle.id}:1?${p}`;
+    window.location.href = `${CFG.store}/cart/${selBottle.id}:${CFG.qty}?${p}`;
   }, 100);
 }
 
@@ -2104,15 +2115,17 @@ function launchConfetti() {
 
 /* ── Claim modal ─────────────────────────────────────────── */
 function showClaimModal(bottle) {
-  // Free-shipping offer — the "saving" is the shipping cost they'd otherwise pay
+  // Buy-3 free-shipping offer — saving is the shipping cost on the 3-pack
   // (capped at €22.99 so the headline stays believable; "world" zone is higher)
-  const shipSave = Math.min(getShipRate() || 22.99, 22.99);
-  const fullRrp  = bottle.price + shipSave;
+  const qty       = CFG.qty;
+  const itemsTotal = bottle.price * qty;
+  const shipSave   = Math.min(getShipRate() || 22.99, 22.99);
+  const fullRrp    = itemsTotal + shipSave;
 
   document.getElementById('cm-save-amt').textContent    = '€' + shipSave.toFixed(2);
   const itemsEl = document.getElementById('cm-items-total');
-  if (itemsEl) itemsEl.textContent = '€' + bottle.price.toFixed(2);
-  document.getElementById('cm-bottle-name').textContent = bottle.title;
+  if (itemsEl) itemsEl.textContent = '€' + itemsTotal.toFixed(2);
+  document.getElementById('cm-bottle-name').textContent = qty + ' × ' + bottle.title;
   document.getElementById('cm-rrp').textContent         = fullRrp.toFixed(2);
   document.getElementById('cm-saving-lbl').textContent  = 'FREE';
   const bImg = document.getElementById('cm-bottle-img');
