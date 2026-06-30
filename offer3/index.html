@@ -1335,7 +1335,7 @@
       <div class="sec-hdr">
         <div class="sec-badge">☀️ Summer Special</div>
         <h2 class="sec-title">Buy 3: 10% Off<br>&amp; <span class="title-free">FREE<svg class="free-underline" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M4,11 Q40,3 90,9 T196,7"/></svg></span> Shipping</h2>
-        <p class="hero-pitch">Stock up on your favourite — buy <strong>3 of the same bottle</strong> and save <strong>10%</strong> PLUS free shipping. While summer stock lasts. ☘️</p>
+        <p class="hero-pitch">Stock up on your favourite — buy <strong>3 of the same bottle</strong>, save <strong>10%</strong> and we&rsquo;ll ship for free. We pass the savings back to you. While summer stock lasts. ☘️</p>
         <div class="hero-perks">
           <div class="hero-perk">
             <span class="hp-icon">🏷️</span>
@@ -1343,7 +1343,7 @@
           </div>
           <div class="hero-perk">
             <span class="hp-icon">🚚</span>
-            <div class="hp-text"><strong>FREE shipping</strong><span>Save up to €22.99</span></div>
+            <div class="hp-text"><strong>FREE shipping</strong><span>On us</span></div>
           </div>
           <div class="hero-perk">
             <span class="hp-icon">🍾</span>
@@ -1491,7 +1491,7 @@
   <div class="claim-box">
     <span class="claim-emoji">🎉</span>
     <div class="claim-eyebrow">Your Exclusive Offer Is Ready</div>
-    <h2 class="claim-headline">You're saving <span class="cm-save-amt" id="cm-save-amt">€0.00</span> today!</h2>
+    <h2 class="claim-headline">You save <span class="cm-save-amt" id="cm-save-amt">€0.00</span><br>+ FREE shipping!</h2>
     <p class="claim-sub">Your 3-pack is locked in — complete your order to claim 10% off + FREE shipping.</p>
     <div class="sel-summary">
       <div class="sel-pill">
@@ -1505,14 +1505,15 @@
     </div>
     <div class="savings-bd">
       <div class="sb-rrp-row">
-        <span>3 bottles + standard shipping</span>
+        <span>3 bottles</span>
         <span class="sb-rrp-amt">€<span id="cm-rrp">0.00</span></span>
       </div>
+      <div class="ship-line"><span>10% off</span><span id="cm-saving-lbl">−€0.00</span></div>
+      <div class="ship-line"><span>Shipping</span><span class="ship-free">FREE</span></div>
       <div class="sb-saving-row">
-        <span>You save</span>
-        <span id="cm-saving-lbl" style="font-size:20px;font-weight:800;letter-spacing:-.01em;">−€0.00</span>
+        <span>You pay today</span>
+        <span id="cm-items-total" style="font-size:20px;font-weight:800;letter-spacing:-.01em;">—</span>
       </div>
-      <div class="ship-line"><span>You pay today</span><span id="cm-items-total">—</span></div>
     </div>
     <div class="cm-social">
       <div class="cm-social-stars">★★★★★</div>
@@ -2117,22 +2118,19 @@ function launchConfetti() {
 
 /* ── Claim modal ─────────────────────────────────────────── */
 function showClaimModal(bottle) {
-  // Buy-3 offer — 10% off the bottles + free shipping
-  // (ship saving capped at €22.99 so the headline stays believable)
+  // Buy-3 offer — 10% off the bottles + free shipping.
+  // We never quote a shipping price (it varies); shipping just shows "FREE".
   const qty        = CFG.qty;
   const itemsFull  = bottle.price * qty;
   const bottleSave = itemsFull * (CFG.discountPct / 100);
   const itemsPay   = itemsFull - bottleSave;
-  const shipSave   = Math.min(getShipRate() || 22.99, 22.99);
-  const totalSave  = bottleSave + shipSave;
-  const fullRrp    = itemsFull + shipSave;
 
-  document.getElementById('cm-save-amt').textContent    = '€' + totalSave.toFixed(2);
+  document.getElementById('cm-save-amt').textContent    = '€' + bottleSave.toFixed(2);
   const itemsEl = document.getElementById('cm-items-total');
   if (itemsEl) itemsEl.textContent = '€' + itemsPay.toFixed(2);
   document.getElementById('cm-bottle-name').textContent = qty + ' × ' + bottle.title;
-  document.getElementById('cm-rrp').textContent         = fullRrp.toFixed(2);
-  document.getElementById('cm-saving-lbl').textContent  = '−€' + totalSave.toFixed(2);
+  document.getElementById('cm-rrp').textContent         = itemsFull.toFixed(2);
+  document.getElementById('cm-saving-lbl').textContent  = '−€' + bottleSave.toFixed(2);
   const bImg = document.getElementById('cm-bottle-img');
   if (bImg) { bImg.src = bottle.img; bImg.alt = bottle.title; }
 
