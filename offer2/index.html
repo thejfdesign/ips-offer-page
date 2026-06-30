@@ -1834,17 +1834,16 @@ window.addEventListener('popstate', function(e) {
 
 function claimOffer() {
   if (!selBottle || !selGift) return;
-  // Reset gate to form state before showing
-  document.getElementById('gate-form-state').style.display = '';
-  document.getElementById('gate-blocked').classList.remove('show');
-  document.getElementById('gate-loading').classList.remove('show');
-  document.getElementById('gate-form').reset();
-  ['gate-err-name','gate-err-email','gate-err-yob','gate-err-country'].forEach(id => {
-    document.getElementById(id).classList.remove('show');
+  // No lead form on this offer — go straight to Shopify checkout
+  const btn = document.querySelector('.btn-claim');
+  if (btn) { btn.textContent = 'Taking you to checkout…'; btn.style.pointerEvents = 'none'; }
+  const p = new URLSearchParams({
+    'attributes[Source]': 'Free 50cl Bottle Offer',
+    'discount':           CFG.discountCode,
   });
-  // Push a history entry so the back button closes the modal, not the page
-  history.pushState({ gateOpen: true }, '');
-  document.getElementById('gate-modal').classList.add('show');
+  setTimeout(() => {
+    window.location.href = `${CFG.store}/cart/${selBottle.id}:1,${selGift.variantId}:1?${p}`;
+  }, 100);
 }
 
 // Shopify checkout[shipping_address][country] needs full English name, not ISO code
