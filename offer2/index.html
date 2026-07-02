@@ -1120,6 +1120,44 @@
     /* ══════════════════════════════════════════════════════════
        CLAIM POPUP MODAL
     ══════════════════════════════════════════════════════════ */
+    /* Sold-out modal */
+    .soldout-modal {
+      position: fixed; inset: 0; z-index: 700;
+      background: rgba(6,4,1,.94);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; padding: 22px;
+      opacity: 0; pointer-events: none; transition: opacity .3s ease;
+    }
+    .soldout-modal.show { opacity: 1; pointer-events: all; }
+    .soldout-box {
+      background: var(--dark-bg); border: 1.5px solid var(--gold);
+      border-radius: 22px; padding: 34px 26px 28px; text-align: center;
+      max-width: 400px; width: 100%;
+      box-shadow: 0 0 60px rgba(201,168,62,.22), 0 32px 80px rgba(0,0,0,.7);
+    }
+    .soldout-emoji { font-size: 46px; line-height: 1; margin-bottom: 10px; }
+    .soldout-eyebrow {
+      font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 8px;
+    }
+    .soldout-title {
+      font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 800;
+      color: var(--dark-text); line-height: 1.25; margin-bottom: 10px;
+    }
+    .soldout-sub { font-size: 13.5px; color: var(--dark-dim); line-height: 1.6; margin-bottom: 22px; }
+    .soldout-btn {
+      display: block; width: 100%; box-sizing: border-box;
+      background: linear-gradient(135deg,var(--gold-lt),var(--gold) 60%,var(--gold-dk));
+      color: var(--ink-2); font-family: inherit; font-size: 16px; font-weight: 800;
+      padding: 15px; border-radius: 50px; text-decoration: none;
+      box-shadow: 0 6px 22px rgba(201,168,62,.45); transition: transform .18s;
+    }
+    .soldout-btn:hover { transform: translateY(-2px); }
+    .soldout-link {
+      display: inline-block; margin-top: 14px; font-size: 12px;
+      color: var(--dark-dim); text-decoration: underline; text-underline-offset: 3px;
+    }
+
     .claim-modal {
       position: fixed; inset: 0; z-index: 550;
       background: rgba(6,4,1,.92);
@@ -1530,6 +1568,18 @@
     <div class="pinfo-awards" id="pi-awards"></div>
     <div class="pinfo-desc" id="pi-desc"></div>
     <button class="pinfo-choose-btn" id="pi-choose-btn">Choose this bottle &rarr;</button>
+  </div>
+</div>
+
+<!-- Sold-out modal — shown when both free 50cl options are gone -->
+<div class="soldout-modal" id="soldout-modal">
+  <div class="soldout-box">
+    <div class="soldout-emoji">😔</div>
+    <div class="soldout-eyebrow">This Offer Just Sold Out</div>
+    <h2 class="soldout-title">The free 50cl bottles have gone!</h2>
+    <p class="soldout-sub">This summer special is fully claimed &mdash; but don&rsquo;t worry, we&rsquo;ve got another great deal running right now.</p>
+    <a class="soldout-btn" href="/offer3">See our other offer &rarr;</a>
+    <a class="soldout-link" href="https://irishpremiumspirits.eu">or browse the full range</a>
   </div>
 </div>
 
@@ -2135,6 +2185,12 @@ function changeSelection() {
 
 /* ── Browser back button handled in unified popstate listener above ── */
 
+/* ── Sold-out popup (both free 50cl options gone) ────────── */
+function showSoldOutModal() {
+  const m = document.getElementById('soldout-modal');
+  if (m) m.classList.add('show');
+}
+
 /* ── Stock check (Shopify public products API) ───────────── */
 (async () => {
   try {
@@ -2172,9 +2228,9 @@ function changeSelection() {
     });
 
     // If EVERY free 50cl option is sold out, this offer can't be fulfilled —
-    // send the visitor to the other live offer instead.
+    // show a popup pointing the visitor to our other live offer.
     if (GIFTS.length && GIFTS.every(g => g.outOfStock)) {
-      window.location.replace('/offer3');
+      showSoldOutModal();
       return;
     }
 
