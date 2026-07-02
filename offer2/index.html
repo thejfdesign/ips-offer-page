@@ -2173,6 +2173,13 @@ function changeSelection() {
       if (!!g.outOfStock !== allOut) { g.outOfStock = allOut; giftChanged = true; }
     });
 
+    // If EVERY free 50cl option is sold out, this offer can't be fulfilled —
+    // send the visitor to the other live offer instead.
+    if (GIFTS.length && GIFTS.every(g => g.outOfStock)) {
+      window.location.replace('/offer3');
+      return;
+    }
+
     if (bottleChanged) renderBottles();
     if (giftChanged)   renderGifts();
   } catch(e) { /* silent fail — show all items */ }
